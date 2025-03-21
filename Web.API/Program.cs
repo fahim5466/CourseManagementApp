@@ -1,21 +1,15 @@
-using Infrastructure.Database;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Web.API.Helpers;
+using Infrastructure;
 
 namespace Web.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add database.
-            builder.Services.AddDbContext<ApplicationDbContext>(options => {
-                string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-                options.UseNpgsql(connectionString);
-            });
+            builder.Services.AddInfrastructure(builder.Configuration); ;
 
             // Add services to the container.
 
@@ -46,7 +40,7 @@ namespace Web.API
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }
