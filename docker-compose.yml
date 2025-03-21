@@ -1,0 +1,26 @@
+services:
+  coursemanage.api:
+    image: ${DOCKER_REGISTRY-}coursemanage.api
+    container_name: coursemanage.api
+    depends_on:
+       coursemanage.database:
+         condition: service_healthy
+    build:
+      context: .
+      dockerfile: Web.API/Dockerfile
+
+  coursemanage.database:
+    image: postgres:latest
+    container_name: coursemanage.database
+    restart: always
+    environment:
+      - POSTGRES_DB=coursemanage
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+       - ./app_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d coursemanage"]
+      interval: 1s
+      timeout: 10s
+      retries: 20
