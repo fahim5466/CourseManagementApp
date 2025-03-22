@@ -14,7 +14,7 @@ namespace Domain.Entities.Roles
 
         #region Properties
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public required string Name { get; set; }
         #endregion
     }
 }

@@ -9,6 +9,7 @@ namespace Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.HasIndex(x => x.Email).IsUnique();
 
             builder.Property(x => x.Name)
                    .HasMaxLength(User.NAME_MAX_LENGTH);

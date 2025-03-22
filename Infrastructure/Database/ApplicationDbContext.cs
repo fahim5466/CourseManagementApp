@@ -30,7 +30,9 @@ namespace Infrastructure.Database
                 PasswordHash = "$2a$13$GFEm2Ijr3Jd4GsbRXp8Yn.YVrCAoatoFjfm458GFMpd5UFzyShqCq",
                 IsEmailVerified = true,
                 EmailVerificationTokenHash = null,
-                RefreshTokenHash = null
+                EmailVerificationTokenHashExpires = null,
+                RefreshTokenHash = null,
+                RefreshTokenExpires = null
             };
 
             // Add admin user.
