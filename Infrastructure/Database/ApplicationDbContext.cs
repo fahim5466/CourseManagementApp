@@ -98,7 +98,7 @@ namespace Infrastructure.Database
 
         public Task<int> SaveChangesAsync()
         {
-            return SaveChangesAsync();
+            return base.SaveChangesAsync();
         }
     }
 }

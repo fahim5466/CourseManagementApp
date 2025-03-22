@@ -4,7 +4,7 @@ namespace Application.Interfaces
 {
     public interface ISecurityTokenProvider
     {
-        Task<string> CreateJwtTokenAsync(User user);
+        string CreateJwtToken(User user);
 
         string CreateRefreshToken();
     }

@@ -12,18 +12,16 @@ using System.Text;
 
 namespace Infrastructure.Security
 {
-    public class SecurityTokenProvider(IConfiguration configuration, IUserRepository userRepository) : ISecurityTokenProvider
+    public class SecurityTokenProvider(IConfiguration configuration) : ISecurityTokenProvider
     {
         private const int REFRESH_TOKEN_SIZE_IN_BYTES = 32;
 
-        public async Task<string> CreateJwtTokenAsync(User user)
+        public string CreateJwtToken(User user)
         {
             string secretKey = configuration["Jwt:Secret"]!;
             int expirationInMinues = configuration.GetValue<int>("Jwt:ExpirationInMinutes");
             string issuer = configuration["Jwt:Issuer"]!;
             string audience = configuration["Jwt:Audience"]!;
-
-            List<Role> userRoles = await userRepository.GetUserRolesAsync(user.Id);
 
             SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(secretKey));
 
@@ -34,7 +32,7 @@ namespace Infrastructure.Security
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email)
             ];
-            claims.AddRange(userRoles.Select(ur => new Claim(ClaimTypes.Role, ur.Name)));
+            claims.AddRange(user.Roles.Select(r => new Claim(ClaimTypes.Role, r.Name)));
 
 
             SecurityTokenDescriptor tokenDescriptor = new()

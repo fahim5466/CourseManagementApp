@@ -21,5 +21,9 @@ namespace Domain.Entities.Users
         public string? RefreshTokenHash { get; set; }
         public DateTime? RefreshTokenExpires { get; set; }
         #endregion
+
+        #region Navigation properties
+        public List<Role> Roles { get; set; } = [];
+        #endregion
     }
 }

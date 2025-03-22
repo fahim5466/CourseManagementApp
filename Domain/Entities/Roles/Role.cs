@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Design.Serialization;
+﻿using Domain.Entities.Users;
+using System.ComponentModel.Design.Serialization;
 
 namespace Domain.Entities.Roles
 {
@@ -15,6 +16,10 @@ namespace Domain.Entities.Roles
         #region Properties
         public Guid Id { get; set; }
         public required string Name { get; set; }
+        #endregion
+
+        #region Navigation properties
+        public List<User> Users { get; set; } = [];
         #endregion
     }
 }

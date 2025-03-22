@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Users;
+using Domain.Relationships;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,6 +26,10 @@ namespace Infrastructure.Configurations
 
             builder.Property(x => x.RefreshTokenHash)
                    .HasMaxLength(User.HASH_MAX_LENGTH);
+
+            builder.HasMany(x => x.Roles)
+                   .WithMany(x => x.Users)
+                   .UsingEntity<UserRole>();
         }
     }
 }
