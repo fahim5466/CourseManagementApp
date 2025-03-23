@@ -30,9 +30,9 @@ namespace Infrastructure.Database
         {
             // Add roles.
 
-            Role adminRole = new Role { Id = new Guid("519BC5A9-8BC3-495B-A320-4AFAEE4CD363"), Name = Role.ADMIN };
-            Role staffRole = new Role { Id = new Guid("214E0C6B-E213-40D1-A1F2-169B0026F882"), Name = Role.STAFF };
-            Role studentRole = new Role { Id = new Guid("DCC31107-75B5-4504-8E87-0D654323C56D"), Name = Role.STUDENT };
+            Role adminRole = new() { Id = new Guid("519BC5A9-8BC3-495B-A320-4AFAEE4CD363"), Name = Role.ADMIN };
+            Role staffRole = new() { Id = new Guid("214E0C6B-E213-40D1-A1F2-169B0026F882"), Name = Role.STAFF };
+            Role studentRole = new() { Id = new Guid("DCC31107-75B5-4504-8E87-0D654323C56D"), Name = Role.STUDENT };
 
             modelBuilder.Entity<Role>().HasData(adminRole);
             modelBuilder.Entity<Role>().HasData(staffRole);
@@ -40,12 +40,12 @@ namespace Infrastructure.Database
 
             // Add admin user.
 
-            User adminUser = new User
+            User adminUser = new()
             {
                 Id = new Guid("B8C35758-1881-47AD-8994-0529DF7C70ED"),
                 Name = "Admin",
                 Email = "admin@test.com",
-                PasswordHash = "$2a$13$GFEm2Ijr3Jd4GsbRXp8Yn.YVrCAoatoFjfm458GFMpd5UFzyShqCq",
+                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
                 IsEmailVerified = true,
                 EmailVerificationTokenHash = null,
                 EmailVerificationTokenHashExpires = null,
@@ -59,12 +59,12 @@ namespace Infrastructure.Database
 
             // Add staff user.
 
-            User staffUser = new User
+            User staffUser = new()
             {
                 Id = new Guid("EE13B6C6-A98E-440B-93F8-ECF083D51052"),
                 Name = "Staff",
                 Email = "staff@test.com",
-                PasswordHash = "$2a$13$902uxeLjnX9nd.78KtdZNOUQNrzoCGvdug1dUiV33NRNNblqe7VA6",
+                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
                 IsEmailVerified = true,
                 EmailVerificationTokenHash = null,
                 EmailVerificationTokenHashExpires = null,
@@ -78,12 +78,12 @@ namespace Infrastructure.Database
 
             // Add student user.
 
-            User studentUser = new User
+            User studentUser = new()
             {
                 Id = new Guid("2E23583F-D118-4295-8A80-09266B7497DB"),
                 Name = "Student",
                 Email = "student@test.com",
-                PasswordHash = "$2a$13$7ZX.H.wI0yitiqiHnE9D8Om.T6F0boCdYS5EmKviXkl7m8uwefY4e",
+                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
                 IsEmailVerified = true,
                 EmailVerificationTokenHash = null,
                 EmailVerificationTokenHashExpires = null,
