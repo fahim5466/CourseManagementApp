@@ -2,7 +2,9 @@
 using Application.Interfaces;
 using Application.Services;
 using Domain.Repositories;
+using FluentEmail.Core;
 using Infrastructure.Database;
+using Infrastructure.Notifications;
 using Infrastructure.Repositories;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,7 +23,8 @@ namespace Infrastructure
             return services.AddDatabase(configuration)
                            .AddRepositories()
                            .AddApplicationServices()
-                           .AddSecurity(configuration);
+                           .AddSecurity(configuration)
+                           .AddNotifications(configuration);
         }
 
         private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -75,6 +78,15 @@ namespace Infrastructure
             services.AddSingleton<ICryptoHasher, CryptoHasher>();
             services.AddSingleton<ISecurityTokenProvider, SecurityTokenProvider>();
 
+            return services;
+        }
+
+        private static IServiceCollection AddNotifications(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddScoped<IEmailService, EmailService>();
+
+            services.AddFluentEmail(configuration["Email:SenderEmail"], configuration["Email:Sender"])
+                    .AddSmtpSender(configuration["Email:Host"], configuration.GetValue<int>("Email:Port"));
             return services;
         }
     }

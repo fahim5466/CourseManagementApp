@@ -5,6 +5,8 @@ services:
     depends_on:
        coursemanage.database:
          condition: service_healthy
+       coursemanage.emailservice:
+         condition: service_started
        coursemanage.logging:
          condition: service_started
     build:
@@ -29,6 +31,12 @@ services:
       retries: 5
       start_period: 30s
       timeout: 10s
+
+  coursemanage.emailservice:
+    image: changemakerstudiosus/papercut-smtp:latest
+    container_name: coursemanage.emailservice
+    ports:
+      - 5003:80
 
   coursemanage.logging:
     image: datalust/seq:latest
