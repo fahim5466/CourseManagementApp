@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Security
 {
-    class CryptoHasher : ICryptoHasher
+    public class CryptoHasher : ICryptoHasher
     {
         private const int simpleHashWorkFactor = 5;
         private const int enhancedHashWorkFactor = 13;

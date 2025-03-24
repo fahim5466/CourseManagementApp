@@ -1,14 +1,12 @@
-﻿using Application;
-using Application.Interfaces;
-using Domain.Entities.Roles;
+﻿using Application.Interfaces;
 using Domain.Entities.Users;
-using Domain.Repositories;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using JwtRegisteredClaimNames = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 
 namespace Infrastructure.Security
 {
@@ -19,12 +17,11 @@ namespace Infrastructure.Security
         public string CreateJwtToken(User user)
         {
             string secretKey = configuration["Jwt:Secret"]!;
-            int expirationInMinues = configuration.GetValue<int>("Jwt:ExpirationInMinutes");
+            int expirationInMinues = Int32.Parse(configuration["Jwt:ExpirationInMinutes"]!);
             string issuer = configuration["Jwt:Issuer"]!;
             string audience = configuration["Jwt:Audience"]!;
 
             SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(secretKey));
-
             SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
             List<Claim> claims =
@@ -34,21 +31,46 @@ namespace Infrastructure.Security
             ];
             claims.AddRange(user.Roles.Select(r => new Claim(ClaimTypes.Role, r.Name)));
 
+            JwtSecurityToken token = new(
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(expirationInMinues),
+                    signingCredentials: credentials,
+                    issuer: issuer,
+                    audience: audience
+                );
 
-            SecurityTokenDescriptor tokenDescriptor = new()
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public ClaimsPrincipal? ValidateJwtToken(string token)
+        {
+            string secretKey = configuration["Jwt:Secret"]!;
+            string issuer = configuration["Jwt:Issuer"]!;
+            string audience = configuration["Jwt:Audience"]!;
+            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(secretKey));
+
+            TokenValidationParameters validationParameters = new()
             {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(expirationInMinues),
-                SigningCredentials = credentials,
-                Issuer = issuer,
-                Audience = audience
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                IssuerSigningKey = securityKey,
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                ClockSkew = TimeSpan.Zero
             };
 
-            JsonWebTokenHandler handler = new();
-
-            string token = handler.CreateToken(tokenDescriptor);
-
-            return token;
+            try
+            {
+                JwtSecurityTokenHandler tokenHandler = new();
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out _);
+                return principal;
+            }
+            catch (Exception)
+            {
+                return null; // Token is invalid or expired
+            }
         }
 
         public string CreateRefreshToken()

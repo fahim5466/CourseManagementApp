@@ -8,9 +8,9 @@ namespace Infrastructure.Database
 {
     public class ApplicationDbContext : DbContext, IUnitOfWork
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<UserRole> UserRoles { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
