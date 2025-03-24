@@ -1,6 +1,7 @@
 using Web.API.Helpers;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace Web.API
 {
@@ -10,9 +11,12 @@ namespace Web.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddInfrastructure(builder.Configuration); ;
+            builder.Host.UseSerilog((context, loggerConfiguration) =>
+            {
+                loggerConfiguration.ReadFrom.Configuration(context.Configuration);
+            });
 
-            // Add services to the container.
+            builder.Services.AddInfrastructure(builder.Configuration);
 
             builder.Services.AddControllers()
                             .AddJsonOptions(options =>
@@ -45,8 +49,9 @@ namespace Web.API
                 message = "Hello from the course management app!"
             }));
 
-
             app.UseHttpsRedirection();
+
+            app.UseSerilogRequestLogging();
 
             app.UseAuthentication();
 

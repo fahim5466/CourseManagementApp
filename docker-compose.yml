@@ -5,9 +5,13 @@ services:
     depends_on:
        coursemanage.database:
          condition: service_healthy
+       coursemanage.logging:
+         condition: service_started
     build:
       context: .
       dockerfile: Web.API/Dockerfile
+    volumes:
+      - ./app_logs:/app/logs
 
   coursemanage.database:
     image: postgres:latest
@@ -21,6 +25,16 @@ services:
        - ./app_db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d coursemanage"]
-      interval: 1s
+      interval: 10s
+      retries: 5
+      start_period: 30s
       timeout: 10s
-      retries: 20
+
+  coursemanage.logging:
+    image: datalust/seq:latest
+    container_name: coursemanage.logging
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5004:80
+  

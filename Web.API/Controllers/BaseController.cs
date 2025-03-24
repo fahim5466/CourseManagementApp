@@ -18,5 +18,17 @@ namespace Web.API.Controllers
             return result.IsSuccessful ? StatusCode(result.StatusCode, result.Value)
                                        : StatusCode(result.StatusCode, result.ProblemDetails);
         }
+
+        public void LogResult<T>(Result result, ILogger<T> logger)
+        {
+            if (result.IsSuccessful)
+            {
+                logger.LogInformation("Request succeeded with status code {StatusCode}.", result.StatusCode);
+            }
+            else
+            {
+                logger.LogInformation("Request failed with status code {StatusCode}. Error details: {@Error}.", result.StatusCode, result.ProblemDetails);
+            }
+        }
     }
 }
