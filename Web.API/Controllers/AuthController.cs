@@ -1,8 +1,7 @@
 ﻿using Application.DTOs.Auth;
 using Application.Services;
-using Domain.Entities.Roles;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Application.Helpers.ResultHelper;
 
 namespace Web.API.Controllers
 {
@@ -12,8 +11,8 @@ namespace Web.API.Controllers
         [Route("login")]
         public async Task<IActionResult> Login(LoginRequestDto request)
         {
-            LoginResponseDto response = await authService.Login(request);
-            return Ok(response);
+            Result<LoginResponseDto> response = await authService.LoginAsync(request);
+            return ApiResult(response);
         }
     }
 }
