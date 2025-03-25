@@ -28,5 +28,14 @@ namespace Web.API.Controllers
 
             return ApiResult(result);
         }
+
+        [HttpPost]
+        [Route("refreshtoken")]
+        public async Task<IActionResult> RefreshTokenAsync(RefreshTokenRequestDto request)
+        {
+            Result<RefreshTokenResponseDto> result = await authService.RefreshTokenAsync(request);
+
+            return ApiResult(result);
+        }
     }
 }

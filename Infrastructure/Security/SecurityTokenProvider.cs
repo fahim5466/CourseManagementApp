@@ -28,7 +28,7 @@ namespace Infrastructure.Security
             List<Claim> claims =
             [
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email)
             ];
             claims.AddRange(user.Roles.Select(r => new Claim(ClaimTypes.Role, r.Name)));
 
@@ -43,7 +43,7 @@ namespace Infrastructure.Security
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public ClaimsPrincipal? ValidateJwtToken(string token)
+        public ClaimsPrincipal? ValidateJwtToken(string token, bool validateLifetime = true)
         {
             string secretKey = configuration["Jwt:Secret"]!;
             string issuer = configuration["Jwt:Issuer"]!;
@@ -53,7 +53,7 @@ namespace Infrastructure.Security
             TokenValidationParameters validationParameters = new()
             {
                 ValidateIssuerSigningKey = true,
-                ValidateLifetime = true,
+                ValidateLifetime = validateLifetime,
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 IssuerSigningKey = securityKey,
@@ -72,6 +72,11 @@ namespace Infrastructure.Security
             {
                 return null; // Token is invalid or expired
             }
+        }
+
+        public string GetEmailFromClaims(ClaimsPrincipal claimsPrincipal)
+        {
+            return claimsPrincipal.Claims.First(c => c.Type == ClaimTypes.Email).Value;
         }
 
         public string CreateRefreshToken()

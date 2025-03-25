@@ -4,6 +4,7 @@ using Domain.Entities.Users;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 using static Application.Errors.AuthErrors;
 using static Application.Helpers.ResultHelper;
 using static Application.Helpers.ValidationHelper;
@@ -14,6 +15,7 @@ namespace Application.Services
     {
         public Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto request);
         public Task<Result> VerifyEmailAsync(string verificationToken, string pathPrefix);
+        public Task<Result<RefreshTokenResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto request);
     }
 
     public class AuthService(IConfiguration configuration, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider,
@@ -54,10 +56,7 @@ namespace Application.Services
             string jwtToken = securityTokenProvider.CreateJwtToken(user);
 
             // Create and save refresh token.
-            string refreshToken = securityTokenProvider.CreateRefreshToken();
-            user.RefreshTokenHash = cryptoHasher.SimpleHash(refreshToken);
-            user.RefreshTokenExpires = DateTime.UtcNow.AddMinutes(Int32.Parse(configuration["RefTok:ExpirationInMinutes"]!));
-            await unitOfWork.SaveChangesAsync();
+            string refreshToken = await CreateAndSaveRefreshTokenAsync(user);
 
             return Result<LoginResponseDto>.Success(StatusCodes.Status200OK, new LoginResponseDto { JwtToken = jwtToken, RefreshToken = refreshToken });
 
@@ -93,6 +92,48 @@ namespace Application.Services
             await unitOfWork.SaveChangesAsync();
 
             return Result.Success(StatusCodes.Status200OK);
+        }
+
+        public async Task<Result<RefreshTokenResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto request)
+        {
+            // Validate jwt token ignoring expiration.
+            ClaimsPrincipal? claimsPrincipal = securityTokenProvider.ValidateJwtToken(request.JwtToken, false);
+
+            if (claimsPrincipal == null)
+            {
+                return Result<RefreshTokenResponseDto>.Failure(new InvalidLoginCredentialsError());
+            }
+
+            // Validate user.
+            string email = securityTokenProvider.GetEmailFromClaims(claimsPrincipal);
+            User? user = await userRepository.GetUserByEmailAsync(email);
+
+            if(user == null || user.RefreshTokenHash == null || user.RefreshTokenExpires == null)
+            {
+                return Result<RefreshTokenResponseDto>.Failure(new InvalidLoginCredentialsError());
+            }
+
+            // Validate refresh token.
+            if(user.RefreshTokenExpires < DateTime.UtcNow || !cryptoHasher.Verify(request.RefreshToken, user.RefreshTokenHash))
+            {
+                return Result<RefreshTokenResponseDto>.Failure(new InvalidLoginCredentialsError());
+            }
+
+            // Generate new jwt and refresh token.
+            string jwtToken = securityTokenProvider.CreateJwtToken(user);
+            string refreshToken = await CreateAndSaveRefreshTokenAsync(user);
+
+            return Result<RefreshTokenResponseDto>.Success(StatusCodes.Status200OK, new RefreshTokenResponseDto { JwtToken = jwtToken, RefreshToken = refreshToken});
+        }
+
+        private async Task<string> CreateAndSaveRefreshTokenAsync(User user)
+        {
+            string refreshToken = securityTokenProvider.CreateRefreshToken();
+            user.RefreshTokenHash = cryptoHasher.SimpleHash(refreshToken);
+            user.RefreshTokenExpires = DateTime.UtcNow.AddMinutes(Int32.Parse(configuration["RefTok:ExpirationInMinutes"]!));
+            await unitOfWork.SaveChangesAsync();
+
+            return refreshToken;
         }
     }
 }
