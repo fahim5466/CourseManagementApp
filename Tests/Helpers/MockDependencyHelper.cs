@@ -17,6 +17,7 @@ namespace Tests.Helpers
             mockConfiguration.Setup(c => c["Jwt:Issuer"]).Returns("unit-tester");
             mockConfiguration.Setup(c => c["Jwt:Audience"]).Returns("unit-tester");
             mockConfiguration.Setup(c => c["RefTok:ExpirationInMinutes"]).Returns("5");
+            mockConfiguration.Setup(c => c["Email:VerificationTokenExpirationInMinutes"]).Returns("5");
 
             return mockConfiguration.Object;
         }

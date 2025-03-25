@@ -5,9 +5,12 @@ namespace Domain.Entities.Users
     public class User
     {
         #region Constants
+        public const int NAME_MIN_LENGTH = 5;
         public const int NAME_MAX_LENGTH = 50;
         public const int EMAIL_MAX_LENGTH = 50;
         public const int HASH_MAX_LENGTH = 200;
+        public const int PASSWORD_MIN_LENGTH = 5;
+        public const int PASSWORD_MAX_LENGTH = 20;
         #endregion
 
         #region Properties

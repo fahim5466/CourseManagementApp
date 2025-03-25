@@ -8,7 +8,6 @@ using FluentAssertions;
 using Infrastructure.Database;
 using Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Tests.Helpers;
 using static Application.Errors.AuthErrors;
@@ -41,7 +40,7 @@ namespace Tests.AuthServiceTests
             badLoginRequest.Errors.Should().NotBeNull();
 
             badLoginRequest.Errors.Should().ContainKey(nameof(LoginRequestDto.Email));
-            badLoginRequest.Errors[nameof(User.Email)].Should().Contain(LoginRequestDto.EMAIL_REQ_ERR_MSG);
+            badLoginRequest.Errors[nameof(LoginRequestDto.Email)].Should().Contain(LoginRequestDto.EMAIL_REQ_ERR_MSG);
 
             badLoginRequest.Errors.Should().ContainKey(nameof(LoginRequestDto.Password));
             badLoginRequest.Errors[nameof(LoginRequestDto.Password)].Should().Contain(LoginRequestDto.PASSWORD_REQ_ERR_MSG);

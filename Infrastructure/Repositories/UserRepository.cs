@@ -2,10 +2,8 @@
 using Domain.Entities.Users;
 using Domain.Repositories;
 using Infrastructure.Database;
-using Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -16,6 +14,23 @@ namespace Infrastructure.Repositories
             return dbContext.Users
                             .Include(u => u.Roles)
                             .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public Task<User?> GetUserByEmailAsync(string email)
+        {
+            return dbContext.Users
+                            .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task CreateUserWithRolesAsync(User user, List<string> roleNames)
+        {
+            List<Role> roles = dbContext.Roles.Where(r => roleNames.Contains(r.Name)).ToList();
+
+            user.Roles = roles;
+
+            dbContext.Users.Add(user);
+
+            await dbContext.SaveChangesAsync();
         }
     }
 }
