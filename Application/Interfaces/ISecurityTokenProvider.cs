@@ -7,5 +7,7 @@ namespace Application.Interfaces
         string CreateJwtToken(User user);
 
         string CreateRefreshToken();
+
+        string CreateEmailVerificationToken();
     }
 }

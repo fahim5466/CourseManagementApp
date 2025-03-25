@@ -14,7 +14,11 @@ namespace Web.API.Controllers
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> RegisterStudentAsync(RegisterUserRequestDto request)
         {
-            Result result = await userService.RegisterStudentAsync(request);
+            string host = HttpContext.Request.Host.Value!;
+            string scheme = HttpContext.Request.Scheme;
+            string pathPrefix = $"{scheme}://{host}";
+
+            Result result = await userService.RegisterStudentAsync(request, pathPrefix);
 
             return ApiResult(result);
         }

@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Application.Services;
 using FluentEmail.Core;
 using FluentEmail.Core.Models;
 
@@ -10,11 +11,17 @@ namespace Infrastructure.Notifications
         {
             SendResponse sendResponse = await fluentEmail.To(email)
                                                          .Subject(subject)
-                                                         .Body(content)
+                                                         .Body(content, true)
                                                          .SendAsync();
 
 
             return sendResponse.Successful;
+        }
+
+        public async Task SendEmailVerificationLinkAsync(string email, string pathPrefix, string verificationToken)
+        {
+            string href = $"{pathPrefix}/{AuthService.VERIFY_EMAIL_ROUTE}?email={email}&verificationToken={verificationToken}";
+            await SendEmailAsync(email, "Verify your email", $"Please click this <a href={href}>link</a> to verify your email.");
         }
     }
 }

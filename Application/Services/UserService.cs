@@ -13,12 +13,12 @@ namespace Application.Services
 {
     public interface IUserService
     {
-        public Task<Result> RegisterStudentAsync(RegisterUserRequestDto request);
+        public Task<Result> RegisterStudentAsync(RegisterUserRequestDto request, string pathPreix);
     }
 
-    public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IConfiguration configuration) : IUserService
+    public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IConfiguration configuration) : IUserService
     {
-        public async Task<Result> RegisterStudentAsync(RegisterUserRequestDto request)
+        public async Task<Result> RegisterStudentAsync(RegisterUserRequestDto request, string pathPrefix)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
@@ -48,6 +48,8 @@ namespace Application.Services
                 EmailVerificationTokenHash = cryptoHasher.SimpleHash(emailVerificationToken),
                 EmailVerificationTokenHashExpires = DateTime.UtcNow.AddMinutes(emailVerificationTokenExpiration)
             }, [Role.STUDENT]);
+
+            await emailService.SendEmailVerificationLinkAsync(request.Email, pathPrefix, emailVerificationToken);
 
             Result result = Result.Success(StatusCodes.Status201Created);
 

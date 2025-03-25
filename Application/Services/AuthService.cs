@@ -18,6 +18,8 @@ namespace Application.Services
     public class AuthService(IConfiguration configuration, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider,
                        IUserRepository userRepository, IUnitOfWork unitOfWork) : IAuthService
     {
+        public const string VERIFY_EMAIL_ROUTE = "verify/email";
+
         public async Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto request)
         {
             // Validate request.
@@ -59,5 +61,10 @@ namespace Application.Services
             return Result<LoginResponseDto>.Success(StatusCodes.Status200OK, new LoginResponseDto { JwtToken = jwtToken, RefreshToken = refreshToken });
 
         }
+
+        //public async Task<Result> VerifyEmailAsync(string verificationToken)
+        //{
+        //    User? user = userRepository.GetUserByEmailVerificationToken();
+        //}
     }
 }

@@ -13,6 +13,7 @@ namespace Infrastructure.Security
     public class SecurityTokenProvider(IConfiguration configuration) : ISecurityTokenProvider
     {
         private const int REFRESH_TOKEN_SIZE_IN_BYTES = 32;
+        private const int EMAIL_VERIFICATION_TOKEN_SIZE_IN_BYTES = 32;
 
         public string CreateJwtToken(User user)
         {
@@ -75,12 +76,20 @@ namespace Infrastructure.Security
 
         public string CreateRefreshToken()
         {
-            byte[] randomNumber = new byte[REFRESH_TOKEN_SIZE_IN_BYTES];
+            return Convert.ToBase64String(CreateToken(REFRESH_TOKEN_SIZE_IN_BYTES));
+        }
+
+        public string CreateEmailVerificationToken()
+        {
+            return Convert.ToBase64String(CreateToken(EMAIL_VERIFICATION_TOKEN_SIZE_IN_BYTES));
+        }
+
+        public byte[] CreateToken(int tokenSizeInBytes)
+        {
+            byte[] randomNumber = new byte[tokenSizeInBytes];
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
-            string refreshToken = Convert.ToBase64String(randomNumber);
-
-            return refreshToken;
+            return randomNumber;
         }
     }
 }
