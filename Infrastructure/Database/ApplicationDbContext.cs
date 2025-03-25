@@ -47,8 +47,8 @@ namespace Infrastructure.Database
                 Email = "admin@test.com",
                 PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
                 IsEmailVerified = true,
-                EmailVerificationTokenHash = null,
-                EmailVerificationTokenHashExpires = null,
+                EmailVerificationToken = null,
+                EmailVerificationTokenExpires = null,
                 RefreshTokenHash = null,
                 RefreshTokenExpires = null
             };
@@ -66,8 +66,8 @@ namespace Infrastructure.Database
                 Email = "staff@test.com",
                 PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
                 IsEmailVerified = true,
-                EmailVerificationTokenHash = null,
-                EmailVerificationTokenHashExpires = null,
+                EmailVerificationToken = null,
+                EmailVerificationTokenExpires = null,
                 RefreshTokenHash = null,
                 RefreshTokenExpires = null
             };
@@ -85,8 +85,8 @@ namespace Infrastructure.Database
                 Email = "student@test.com",
                 PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
                 IsEmailVerified = true,
-                EmailVerificationTokenHash = null,
-                EmailVerificationTokenHashExpires = null,
+                EmailVerificationToken = null,
+                EmailVerificationTokenExpires = null,
                 RefreshTokenHash = null,
                 RefreshTokenExpires = null
             };
