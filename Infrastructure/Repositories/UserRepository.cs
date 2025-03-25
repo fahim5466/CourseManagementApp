@@ -32,5 +32,10 @@ namespace Infrastructure.Repositories
 
             await dbContext.SaveChangesAsync();
         }
+
+        public async Task<User?> GetUserByEmailVerificationTokenAsync(string token)
+        {
+            return await dbContext.Users.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+        }
     }
 }

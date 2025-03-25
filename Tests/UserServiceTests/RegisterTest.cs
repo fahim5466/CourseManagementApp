@@ -30,7 +30,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request);
+            Result result = await userService.RegisterStudentAsync(request, string.Empty);
 
             // Assert.
 
@@ -60,7 +60,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request);
+            Result result = await userService.RegisterStudentAsync(request, string.Empty);
 
             // Assert.
 
@@ -98,7 +98,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request);
+            Result result = await userService.RegisterStudentAsync(request, string.Empty);
 
             // Assert.
 
@@ -125,7 +125,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request);
+            Result result = await userService.RegisterStudentAsync(request, string.Empty);
 
             // Assert.
 
@@ -137,8 +137,8 @@ namespace Tests.UserServiceTests
             newUser.Name.Should().Be(request.Name);
             cryptoHasher.Verify(request.Password, newUser.PasswordHash).Should().BeTrue();
             newUser.IsEmailVerified.Should().BeFalse();
-            newUser.EmailVerificationTokenHash.Should().NotBeNull();
-            newUser.EmailVerificationTokenHashExpires.Should().NotBeNull();
+            newUser.EmailVerificationToken.Should().NotBeNull();
+            newUser.EmailVerificationTokenExpires.Should().NotBeNull();
             newUser.RefreshTokenHash.Should().BeNull();
             newUser.RefreshTokenExpires.Should().BeNull();
             newUser.Roles.Should().HaveCount(1);

@@ -10,5 +10,7 @@ namespace Domain.Repositories
         public Task<User?> GetUserByEmailAsync(string email);
 
         public Task CreateUserWithRolesAsync(User user, List<string> roleNames);
+
+        public Task<User?> GetUserByEmailVerificationTokenAsync(string token);
     }
 }

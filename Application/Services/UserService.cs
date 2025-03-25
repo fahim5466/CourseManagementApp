@@ -45,8 +45,8 @@ namespace Application.Services
                 Email = request.Email,
                 PasswordHash = cryptoHasher.EnhancedHash(request.Password),
                 IsEmailVerified = false,
-                EmailVerificationTokenHash = cryptoHasher.SimpleHash(emailVerificationToken),
-                EmailVerificationTokenHashExpires = DateTime.UtcNow.AddMinutes(emailVerificationTokenExpiration)
+                EmailVerificationToken = emailVerificationToken,
+                EmailVerificationTokenExpires = DateTime.UtcNow.AddMinutes(emailVerificationTokenExpiration)
             }, [Role.STUDENT]);
 
             await emailService.SendEmailVerificationLinkAsync(request.Email, pathPrefix, emailVerificationToken);

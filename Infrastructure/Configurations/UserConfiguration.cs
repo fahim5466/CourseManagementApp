@@ -21,7 +21,7 @@ namespace Infrastructure.Configurations
             builder.Property(x => x.PasswordHash)
                    .HasMaxLength(User.HASH_MAX_LENGTH);
 
-            builder.Property(x => x.EmailVerificationTokenHash)
+            builder.Property(x => x.EmailVerificationToken)
                    .HasMaxLength(User.HASH_MAX_LENGTH);
 
             builder.Property(x => x.RefreshTokenHash)

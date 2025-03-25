@@ -37,5 +37,25 @@ namespace Application.Errors
                 Title = "User email has not been verified";
             }
         }
+
+        public class InvalidEmailVerificationToken : ProblemDetails
+        {
+            public InvalidEmailVerificationToken()
+            {
+                Status = StatusCodes.Status400BadRequest;
+                Type = $"{AUTH_ERROR_PATH}/invalid-email-verification-token";
+                Title = "Email verification token is not valid";
+            }
+        }
+
+        public class ExpiredEmailVerificationToken : ProblemDetails
+        {
+            public ExpiredEmailVerificationToken()
+            {
+                Status = StatusCodes.Status400BadRequest;
+                Type = $"{AUTH_ERROR_PATH}/expired-email-verification-token";
+                Title = "Email verification token has expired. A new token has been sent to user email.";
+            }
+        }
     }
 }

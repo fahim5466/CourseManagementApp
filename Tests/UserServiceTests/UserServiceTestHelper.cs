@@ -6,6 +6,7 @@ using Infrastructure.Repositories;
 using Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Tests.Helpers;
+using static Tests.Helpers.MockDependencyHelper;
 
 namespace Tests.UserServiceTests
 {
@@ -18,7 +19,7 @@ namespace Tests.UserServiceTests
             ISecurityTokenProvider securityTokenProvider = new SecurityTokenProvider(configuration);
             IUserRepository userRepository = new UserRepository(dbContext);
 
-            return new(userRepository, cryptoHasher, securityTokenProvider, configuration);
+            return new(userRepository, cryptoHasher, securityTokenProvider, GetMockEmailService(), configuration);
         }
     }
 }

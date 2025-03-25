@@ -1,4 +1,5 @@
-﻿using EntityFrameworkCoreMock;
+﻿using Application.Interfaces;
+using EntityFrameworkCoreMock;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,14 @@ namespace Tests.Helpers
             DbContextMock<ApplicationDbContext> mockDbContext = new DbContextMock<ApplicationDbContext>(dummyOptions);
 
             return mockDbContext;
+        }
+
+        public static IEmailService GetMockEmailService()
+        {
+            Mock<IEmailService> mockEmailService = new Mock<IEmailService>();
+            mockEmailService.Setup(x => x.SendEmailVerificationLinkAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                            .Returns(Task.FromResult(true));
+            return mockEmailService.Object;
         }
     }
 }

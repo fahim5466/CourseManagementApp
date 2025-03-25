@@ -81,7 +81,7 @@ namespace Infrastructure.Security
 
         public string CreateEmailVerificationToken()
         {
-            return Convert.ToBase64String(CreateToken(EMAIL_VERIFICATION_TOKEN_SIZE_IN_BYTES));
+            return Convert.ToHexString(CreateToken(EMAIL_VERIFICATION_TOKEN_SIZE_IN_BYTES));
         }
 
         public byte[] CreateToken(int tokenSizeInBytes)
