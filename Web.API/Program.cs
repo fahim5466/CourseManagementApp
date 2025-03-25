@@ -2,6 +2,8 @@ using Web.API.Helpers;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using Microsoft.Extensions.Options;
+using Web.API.Filters;
 
 namespace Web.API
 {
@@ -18,7 +20,9 @@ namespace Web.API
 
             builder.Services.AddInfrastructure(builder.Configuration);
 
-            builder.Services.AddControllers()
+            builder.Services.AddControllers(
+                                options => options.Filters.Add<PreprocessRequestDtoFilter>()
+                             )
                             .AddJsonOptions(options =>
                              {
                                  options.AllowInputFormatterExceptionMessages = false;
