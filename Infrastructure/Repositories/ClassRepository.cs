@@ -30,9 +30,41 @@ namespace Infrastructure.Repositories
             return await dbContext.Classes.FirstOrDefaultAsync(c => c.Id == guid);
         }
 
+        public async Task<List<Class>> GetClassesByIdAsync(List<string> ids)
+        {
+            List<Class> classes = [];
+
+            foreach(string id in ids)
+            {
+                Class? clss = await GetClassByIdAsync(id);
+
+                if(clss is not null && !classes.Contains(clss))
+                {
+                    classes.Add(clss);
+                }
+            }
+
+            return classes;
+        }
+
         public async Task<List<Class>> GetAllClassesAsync()
         {
             return await dbContext.Classes.ToListAsync();
+        }
+
+        public async Task<bool> AreClassIdsValidAsync(List<string> ids)
+        {
+            foreach (string id in ids)
+            {
+                Class? clss = await GetClassByIdAsync(id);
+
+                if (clss is null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public async Task CreateClassAsync(Class clss)

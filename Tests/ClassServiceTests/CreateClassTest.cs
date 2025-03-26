@@ -22,7 +22,7 @@ namespace Tests.ClassServiceTests
         [Theory]
         [InlineData("", 1)]
         [InlineData("a", 2)]
-        [InlineData("a!", 2)]
+        [InlineData("a!", 3)]
         public async Task CreateClass_InvalidName_ReturnsValidationError(string className, int caseNo)
         {
             // Arrange.

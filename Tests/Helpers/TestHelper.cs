@@ -43,5 +43,12 @@ namespace Tests.Helpers
                           .With(x => x.Courses, []);
         }
 
+
+        public static IPostprocessComposer<Course> CourseFixture()
+        {
+            Fixture fixture = new Fixture();
+            return fixture.Build<Course>()
+                          .With(x => x.Classes, []);
+        }
     }
 }
