@@ -12,7 +12,7 @@ namespace Tests.CourseServiceTests
             IClassRepository classRepository = new ClassRepository(dbContext);
             ICourseRepository courseRepository = new CourseRepository(dbContext);
 
-            return new(courseRepository, classRepository);
+            return new(courseRepository, classRepository, dbContext);
         }
     }
 }

@@ -24,6 +24,19 @@ namespace Infrastructure.Repositories
             return await dbContext.Courses.FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
         }
 
+        public async Task<Course?> GetCourseByNameAsync(string name, string idToExclude)
+        {
+            Guid guid = Guid.Empty;
+            Guid.TryParse(idToExclude, out guid);
+
+            return await dbContext.Courses.FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower() && c.Id != guid);
+        }
+
+        public async Task<List<Course>> GetAllCoursesAsync()
+        {
+            return await dbContext.Courses.Include(c => c.Classes).ToListAsync();
+        }
+
         public async Task CreateCourseAsync(Course course)
         {
             dbContext.Courses.Add(course);

@@ -15,18 +15,20 @@ using static Tests.Helpers.TestHelper;
 
 namespace Tests.CourseServiceTests
 {
-    public class CreateCourseTest
+    public class UpdateCourseTest
     {
         [Theory]
         [InlineData("", 1)]
         [InlineData("a", 2)]
         [InlineData("a!", 3)]
-        public async Task CreateCourse_InvalidName_ReturnsValidationError(string courseName, int caseNo)
+        public async Task UpdateCourse_InvalidName_ReturnsValidationError(string courseName, int caseNo)
         {
             // Arrange.
 
+            Course course = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
+
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseService courseService = GetCourseService(dbContext);
@@ -35,7 +37,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.CreateCourseAsync(request);
+            Result result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
 
             // Assert.
 
@@ -62,23 +64,27 @@ namespace Tests.CourseServiceTests
         }
 
         [Fact]
-        public async Task CreateCourse_DuplicateName_ReturnsError()
+        public async Task UpdateCourse_DuplicateName_ReturnsError()
         {
             // Arrange.
 
-            Course course = CourseFixture().With(x => x.Name, "abc").Create();
+            Course course1 = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            Course course2 = CourseFixture()
+                             .With(x => x.Id, Guid.NewGuid())
+                             .With(x => x.Name, "abc")
+                             .Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course1, course2]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseService courseService = GetCourseService(dbContext);
 
-            CourseRequestDto request = new() { Name = course.Name, ClassIds = [] };
+            CourseRequestDto request = new() { Name = course2.Name, ClassIds = [] };
 
             // Act.
 
-            Result result = await courseService.CreateCourseAsync(request);
+            Result result = await courseService.UpdateCourseAsync(course1.Id.ToString(), request);
 
             // Assert.
 
@@ -86,15 +92,40 @@ namespace Tests.CourseServiceTests
         }
 
         [Fact]
-        public async Task CreateCourse_InvalidClassId_ReturnsError()
+        public async Task UpdateCourse_CourseDoesNotExist_ReturnsError()
         {
             // Arrange.
 
+            Course course = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            CourseService courseService = GetCourseService(dbContext);
+
+            CourseRequestDto request = new() { Name = "abc", ClassIds = [] };
+
+            // Act.
+
+            Result result = await courseService.UpdateCourseAsync(Guid.NewGuid().ToString(), request);
+
+            // Assert.
+
+            TestError<CourseDoesNotExistError>(result);
+        }
+
+        [Fact]
+        public async Task UpdateCourse_InvalidClassId_ReturnsError()
+        {
+            // Arrange.
+
+            Course course = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
             Class clss = ClassFixture().With(c => c.Id, Guid.NewGuid()).Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
-            mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseService courseService = GetCourseService(dbContext);
@@ -103,7 +134,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.CreateCourseAsync(request);
+            Result result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
 
             // Assert.
 
@@ -111,39 +142,41 @@ namespace Tests.CourseServiceTests
         }
 
         [Fact]
-        public async Task CreateCourse_ValidRequest_CreatesCourse()
+        public async Task UpdateCourse_ValidRequest_UpdatesCourseWithClasses()
         {
             // Arrange.
 
-            Class clss = ClassFixture().With(c => c.Id, Guid.NewGuid()).Create();
+            Course course = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            Class clss1 = ClassFixture().With(c => c.Id, Guid.NewGuid()).Create();
+            Class clss2 = ClassFixture().With(c => c.Id, Guid.NewGuid()).Create();
+
+            course.Classes.Add(clss1);
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
-            mockDbContext.CreateDbSetMock(x => x.Courses, []);
-            mockDbContext.CreateDbSetMock(x => x.CourseClasses, []);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss1, clss2]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseRepository courseRepository = new CourseRepository(dbContext);
             CourseService courseService = GetCourseService(dbContext);
 
-            CourseRequestDto request = new() { Name = "abc", ClassIds = [clss.Id.ToString()] };
+            CourseRequestDto request = new() { Name = "abc", ClassIds = [clss2.Id.ToString()] };
 
             // Act.
 
-            Result result = await courseService.CreateCourseAsync(request);
+            Result result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
 
             // Assert.
 
             TestSuccess(result);
-            result.StatusCode.Should().Be(StatusCodes.Status201Created);
+            result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
 
-            Course? course = await courseRepository.GetCourseByNameAsync("abc");
-            course.Should().NotBeNull();
-
-            course = await courseRepository.GetCourseByIdWithClassesAsync(course.Id.ToString());
-            course.Should().NotBeNull();
-            course.Classes.Should().HaveCount(1);
-            course.Classes[0].Id.Should().Be(clss.Id);
+            Course? updatedCourse = await courseRepository.GetCourseByIdWithClassesAsync(course.Id.ToString());
+            updatedCourse.Should().NotBeNull();
+            updatedCourse.Name.Should().Be(request.Name);
+            updatedCourse.Classes.Should().HaveCount(1);
+            updatedCourse.Classes.Should().NotContain(x => x.Id == clss1.Id);
+            updatedCourse.Classes.Should().Contain(x => x.Id == clss2.Id);
         }
     }
 }
