@@ -27,5 +27,15 @@ namespace Application.Errors
                 Title = "Class with this name already exists";
             }
         }
+
+        public class ClassDoesNotExistError : ProblemDetails
+        {
+            public ClassDoesNotExistError()
+            {
+                Status = StatusCodes.Status404NotFound;
+                Type = $"{CLASS_ERROR_PATH}/class-does-not-exist-error";
+                Title = "Class does not exist";
+            }
+        }
     }
 }

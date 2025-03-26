@@ -10,6 +10,8 @@ namespace Application.Services
 {
     public interface IClassService
     {
+        public Task<Result<ClassResponseDto>> GetClassByIdAsync(string id);
+        public Task<Result<List<ClassResponseDto>>> GetAllClassesAsync();
         public Task<Result> CreateClassAsync(CreateClassRequestDto request);
     }
 
@@ -34,6 +36,27 @@ namespace Application.Services
             await classRepository.CreateClassAsync(new() { Id = Guid.NewGuid(), Name = request.Name});
 
             return Result.Success(StatusCodes.Status201Created);
+        }
+
+        public async Task<Result<ClassResponseDto>> GetClassByIdAsync(string id)
+        {
+            Class? clss = await classRepository.GetClassByIdAsync(id);
+            
+            // Class not found.
+            if(clss is null)
+            {
+                return Result<ClassResponseDto>.Failure(new ClassDoesNotExistError());
+            }
+
+            return Result<ClassResponseDto>.Success(StatusCodes.Status200OK, new ClassResponseDto { Id = clss.Id.ToString(), Name = clss.Name });
+        }
+
+        public async Task<Result<List<ClassResponseDto>>> GetAllClassesAsync()
+        {
+            List<Class> classes = await classRepository.GetAllClassesAsync();
+
+            return Result<List<ClassResponseDto>>.Success(StatusCodes.Status200OK,
+                        classes.Select(c => new ClassResponseDto { Id = c.Id.ToString(), Name = c.Name }).ToList());
         }
     }
 }
