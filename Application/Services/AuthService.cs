@@ -16,6 +16,7 @@ namespace Application.Services
         public Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto request);
         public Task<Result> VerifyEmailAsync(string verificationToken, string pathPrefix);
         public Task<Result<RefreshTokenResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto request);
+        public Task<Result> LogoutAsync(string email);
     }
 
     public class AuthService(IConfiguration configuration, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider,
@@ -124,6 +125,21 @@ namespace Application.Services
             string refreshToken = await CreateAndSaveRefreshTokenAsync(user);
 
             return Result<RefreshTokenResponseDto>.Success(StatusCodes.Status200OK, new RefreshTokenResponseDto { JwtToken = jwtToken, RefreshToken = refreshToken});
+        }
+
+        public async Task<Result> LogoutAsync(string email)
+        {
+            User? user = await userRepository.GetUserByEmailAsync(email);
+
+            if(user == null)
+            {
+                return Result.Failure(new InvalidLoginCredentialsError());
+            }
+
+            user.RefreshTokenExpires = DateTime.UtcNow;
+            await unitOfWork.SaveChangesAsync();
+
+            return Result.Success(StatusCodes.Status200OK);
         }
 
         private async Task<string> CreateAndSaveRefreshTokenAsync(User user)
