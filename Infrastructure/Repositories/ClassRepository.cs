@@ -12,6 +12,14 @@ namespace Infrastructure.Repositories
             return await dbContext.Classes.FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower());
         }
 
+        public async Task<Class?> GetClassByNameAsync(string name, string idToExclude)
+        {
+            Guid guid = Guid.Empty;
+            Guid.TryParse(idToExclude, out guid);
+
+            return await dbContext.Classes.FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower() && c.Id != guid);
+        }
+
         public async Task<Class?> GetClassByIdAsync(string id)
         {
             if(!Guid.TryParse(id, out Guid guid))

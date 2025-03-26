@@ -12,12 +12,34 @@ namespace Application.Services
     {
         public Task<Result<ClassResponseDto>> GetClassByIdAsync(string id);
         public Task<Result<List<ClassResponseDto>>> GetAllClassesAsync();
-        public Task<Result> CreateClassAsync(CreateClassRequestDto request);
+        public Task<Result> CreateClassAsync(ClassRequestDto request);
+        public Task<Result> UpdateClassAsync(string id, ClassRequestDto request);
     }
 
-    public class ClassService(IClassRepository classRepository) : IClassService
+    public class ClassService(IClassRepository classRepository, IUnitOfWork unitOfWork) : IClassService
     {
-        public async Task<Result> CreateClassAsync(CreateClassRequestDto request)
+        public async Task<Result<ClassResponseDto>> GetClassByIdAsync(string id)
+        {
+            Class? clss = await classRepository.GetClassByIdAsync(id);
+
+            // Class not found.
+            if (clss is null)
+            {
+                return Result<ClassResponseDto>.Failure(new ClassDoesNotExistError());
+            }
+
+            return Result<ClassResponseDto>.Success(StatusCodes.Status200OK, new ClassResponseDto { Id = clss.Id.ToString(), Name = clss.Name });
+        }
+
+        public async Task<Result<List<ClassResponseDto>>> GetAllClassesAsync()
+        {
+            List<Class> classes = await classRepository.GetAllClassesAsync();
+
+            return Result<List<ClassResponseDto>>.Success(StatusCodes.Status200OK,
+                        classes.Select(c => new ClassResponseDto { Id = c.Id.ToString(), Name = c.Name }).ToList());
+        }
+
+        public async Task<Result> CreateClassAsync(ClassRequestDto request)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
@@ -38,25 +60,33 @@ namespace Application.Services
             return Result.Success(StatusCodes.Status201Created);
         }
 
-        public async Task<Result<ClassResponseDto>> GetClassByIdAsync(string id)
+        public async Task<Result> UpdateClassAsync(string id, ClassRequestDto request)
         {
-            Class? clss = await classRepository.GetClassByIdAsync(id);
-            
-            // Class not found.
-            if(clss is null)
+            // Validate request.
+            ValidationOutcome validationOutcome = Validate(request);
+            if (!validationOutcome.IsValid)
             {
-                return Result<ClassResponseDto>.Failure(new ClassDoesNotExistError());
+                return Result.Failure(new BadCreateClassRequest(validationOutcome.Errors));
             }
 
-            return Result<ClassResponseDto>.Success(StatusCodes.Status200OK, new ClassResponseDto { Id = clss.Id.ToString(), Name = clss.Name });
-        }
+            // Class not found.
+            Class? clss = await classRepository.GetClassByIdAsync(id);
+            if (clss is null)
+            {
+                return Result.Failure(new ClassDoesNotExistError());
+            }
 
-        public async Task<Result<List<ClassResponseDto>>> GetAllClassesAsync()
-        {
-            List<Class> classes = await classRepository.GetAllClassesAsync();
+            // New name should be unique.
+            Class? existingClass = await classRepository.GetClassByNameAsync(request.Name, id);
+            if (existingClass is not null)
+            {
+                return Result.Failure(new ClassAlreadyExistsError());
+            }
 
-            return Result<List<ClassResponseDto>>.Success(StatusCodes.Status200OK,
-                        classes.Select(c => new ClassResponseDto { Id = c.Id.ToString(), Name = c.Name }).ToList());
+            clss.Name = request.Name;
+            await unitOfWork.SaveChangesAsync();
+
+            return Result.Success(StatusCodes.Status200OK);
         }
     }
 }

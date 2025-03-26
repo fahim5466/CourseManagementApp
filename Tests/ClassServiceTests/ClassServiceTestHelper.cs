@@ -11,7 +11,7 @@ namespace Tests.ClassServiceTests
         {
             IClassRepository userRepository = new ClassRepository(dbContext);
 
-            return new(userRepository);
+            return new(userRepository, dbContext);
         }
     }
 }

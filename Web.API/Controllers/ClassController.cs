@@ -32,9 +32,19 @@ namespace Web.API.Controllers
         [HttpPost]
         [Route("class/create")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
-        public async Task<IActionResult> CreateClassAsync(CreateClassRequestDto request)
+        public async Task<IActionResult> CreateClassAsync(ClassRequestDto request)
         {
             Result result = await classService.CreateClassAsync(request);
+
+            return ApiResult(result);
+        }
+
+        [HttpPost]
+        [Route("class/update")]
+        [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
+        public async Task<IActionResult> UpdateClassAsync(string id, [FromBody] ClassRequestDto request)
+        {
+            Result result = await classService.UpdateClassAsync(id, request);
 
             return ApiResult(result);
         }
