@@ -1,6 +1,6 @@
 ﻿using Application.Services;
 using AutoFixture;
-using Domain.Entities.Users;
+using Domain.Entities;
 using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;

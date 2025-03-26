@@ -1,6 +1,6 @@
 ﻿using Application.DTOs.Auth;
 using Application.Interfaces;
-using Domain.Entities.Users;
+using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

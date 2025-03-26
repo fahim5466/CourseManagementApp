@@ -9,11 +9,10 @@ using FluentAssertions;
 using EntityFrameworkCoreMock;
 using Infrastructure.Database;
 using AutoFixture;
-using Domain.Entities.Users;
 using Microsoft.AspNetCore.Http;
 using Infrastructure.Security;
 using Infrastructure.Repositories;
-using Domain.Entities.Roles;
+using Domain.Entities;
 
 namespace Tests.UserServiceTests
 {

@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Roles;
+﻿using Domain.Entities;
 using Domain.Relationships;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static Domain.Entities.Users.User;
+using static Domain.Entities.User;
 
 namespace Application.DTOs.User
 {

@@ -1,6 +1,6 @@
 ﻿using Application.DTOs.User;
 using Application.Services;
-using Domain.Entities.Roles;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.API.Helpers;

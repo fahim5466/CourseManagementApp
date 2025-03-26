@@ -1,7 +1,6 @@
-﻿using Domain.Entities.Users;
-using System.ComponentModel.Design.Serialization;
+﻿using System.ComponentModel.Design.Serialization;
 
-namespace Domain.Entities.Roles
+namespace Domain.Entities
 {
     public class Role
     {

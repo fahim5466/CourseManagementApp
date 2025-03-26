@@ -1,5 +1,4 @@
-﻿using Domain.Entities.Roles;
-using Domain.Entities.Users;
+﻿using Domain.Entities;
 using Domain.Repositories;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;

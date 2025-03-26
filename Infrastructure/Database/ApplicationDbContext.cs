@@ -1,8 +1,7 @@
-﻿using Domain.Entities.Roles;
-using Domain.Entities.Users;
-using Domain.Relationships;
+﻿using Domain.Relationships;
 using Application;
 using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
 
 namespace Infrastructure.Database
 {

@@ -1,6 +1,4 @@
-﻿using Domain.Entities.Roles;
-
-namespace Domain.Entities.Users
+﻿namespace Domain.Entities
 {
     public class User
     {
