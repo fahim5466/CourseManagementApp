@@ -123,6 +123,7 @@ namespace Tests.CourseServiceTests
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
             mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, []);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseRepository courseRepository = new CourseRepository(dbContext);
@@ -141,6 +142,11 @@ namespace Tests.CourseServiceTests
 
             Course? course = await courseRepository.GetCourseByNameAsync("abc");
             course.Should().NotBeNull();
+
+            course = await courseRepository.GetCourseByIdWithClassesAsync(course.Id.ToString());
+            course.Should().NotBeNull();
+            course.Classes.Should().HaveCount(1);
+            course.Classes[0].Id.Should().Be(clss.Id);
         }
     }
 }
