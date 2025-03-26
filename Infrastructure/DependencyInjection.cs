@@ -42,6 +42,7 @@ namespace Infrastructure
         {
             services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IClassRepository, ClassRepository>();
 
             return services;
         }
@@ -50,6 +51,7 @@ namespace Infrastructure
         {
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IClassService, ClassService>();
 
             return services;
         }

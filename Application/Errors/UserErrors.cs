@@ -22,7 +22,7 @@ namespace Application.Errors
         {
             public UserAlreadyExistsError()
             {
-                Status = StatusCodes.Status400BadRequest;
+                Status = StatusCodes.Status409Conflict;
                 Type = $"{USER_ERROR_PATH}/user-with-email-already-exists";
                 Title = "User with email already exists";
             }

@@ -8,16 +8,16 @@ namespace Infrastructure.Repositories
 {
     public class UserRepository(ApplicationDbContext dbContext) : IUserRepository
     {
-        public Task<User?> GetUserByEmailWithRolesAsync(string email)
+        public async Task<User?> GetUserByEmailWithRolesAsync(string email)
         {
-            return dbContext.Users
+            return await dbContext.Users
                             .Include(u => u.Roles)
                             .FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public Task<User?> GetUserByEmailAsync(string email)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return dbContext.Users
+            return await dbContext.Users
                             .FirstOrDefaultAsync(u => u.Email == email);
         }
 
