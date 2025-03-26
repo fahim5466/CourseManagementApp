@@ -8,13 +8,13 @@ namespace Application.Errors
     {
         private const string CLASS_ERROR_PATH = "class";
 
-        public class BadCreateClassRequest : ValidationProblemDetails
+        public class BadClassCreateOrUpdateRequest : ValidationProblemDetails
         {
-            public BadCreateClassRequest(Dictionary<string, List<string>> errors) : base(errors.ToModelStateDictionary())
+            public BadClassCreateOrUpdateRequest(Dictionary<string, List<string>> errors) : base(errors.ToModelStateDictionary())
             {
                 Status = StatusCodes.Status400BadRequest;
-                Type = $"{CLASS_ERROR_PATH}/bad-create-class-request";
-                Title = "The create class request has one or more validation errors";
+                Type = $"{CLASS_ERROR_PATH}/bad-class-create-or-update-request";
+                Title = "The class create/update request has one or more validation errors";
             }
         }
 

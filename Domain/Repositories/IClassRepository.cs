@@ -9,5 +9,6 @@ namespace Domain.Repositories
         public Task<Class?> GetClassByIdAsync(string id);
         public Task<List<Class>> GetAllClassesAsync();
         public Task CreateClassAsync(Class clss);
+        public Task DeleteClassAsync(Class clss);
     }
 }

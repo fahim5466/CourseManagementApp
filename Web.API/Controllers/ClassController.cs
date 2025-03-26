@@ -48,5 +48,15 @@ namespace Web.API.Controllers
 
             return ApiResult(result);
         }
+
+        [HttpGet]
+        [Route("class/delete")]
+        [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
+        public async Task<IActionResult> DeleteClassAsync(string id)
+        {
+            Result result = await classService.DeleteClassAsync(id);
+
+            return ApiResult(result);
+        }
     }
 }

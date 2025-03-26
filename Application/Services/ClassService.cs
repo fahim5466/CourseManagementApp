@@ -14,6 +14,7 @@ namespace Application.Services
         public Task<Result<List<ClassResponseDto>>> GetAllClassesAsync();
         public Task<Result> CreateClassAsync(ClassRequestDto request);
         public Task<Result> UpdateClassAsync(string id, ClassRequestDto request);
+        public Task<Result> DeleteClassAsync(string id);
     }
 
     public class ClassService(IClassRepository classRepository, IUnitOfWork unitOfWork) : IClassService
@@ -45,7 +46,7 @@ namespace Application.Services
             ValidationOutcome validationOutcome = Validate(request);
             if(!validationOutcome.IsValid)
             {
-                return Result.Failure(new BadCreateClassRequest(validationOutcome.Errors));
+                return Result.Failure(new BadClassCreateOrUpdateRequest(validationOutcome.Errors));
             }
 
             // Class name should be unique.
@@ -66,7 +67,7 @@ namespace Application.Services
             ValidationOutcome validationOutcome = Validate(request);
             if (!validationOutcome.IsValid)
             {
-                return Result.Failure(new BadCreateClassRequest(validationOutcome.Errors));
+                return Result.Failure(new BadClassCreateOrUpdateRequest(validationOutcome.Errors));
             }
 
             // Class not found.
@@ -86,7 +87,21 @@ namespace Application.Services
             clss.Name = request.Name;
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success(StatusCodes.Status200OK);
+            return Result.Success(StatusCodes.Status204NoContent);
+        }
+
+        public async Task<Result> DeleteClassAsync(string id)
+        {
+            // Class not found.
+            Class? clss = await classRepository.GetClassByIdAsync(id);
+            if (clss is null)
+            {
+                return Result<ClassResponseDto>.Failure(new ClassDoesNotExistError());
+            }
+
+            await classRepository.DeleteClassAsync(clss);
+
+            return Result.Success(StatusCodes.Status204NoContent);
         }
     }
 }

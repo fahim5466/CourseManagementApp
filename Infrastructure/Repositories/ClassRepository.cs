@@ -40,5 +40,11 @@ namespace Infrastructure.Repositories
             dbContext.Classes.Add(clss);
             await dbContext.SaveChangesAsync();
         }
+
+        public async Task DeleteClassAsync(Class clss)
+        {
+            dbContext.Classes.Remove(clss);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }

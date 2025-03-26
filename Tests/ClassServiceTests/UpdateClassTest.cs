@@ -42,9 +42,9 @@ namespace Tests.ClassServiceTests
 
             // Assert.
 
-            TestError<BadCreateClassRequest>(result);
+            TestError<BadClassCreateOrUpdateRequest>(result);
 
-            BadCreateClassRequest badCreateClassRequest = (BadCreateClassRequest)result.ProblemDetails!;
+            BadClassCreateOrUpdateRequest badCreateClassRequest = (BadClassCreateOrUpdateRequest)result.ProblemDetails!;
             badCreateClassRequest.Errors.Should().NotBeNull();
 
             if (caseNo == 1)
@@ -114,7 +114,7 @@ namespace Tests.ClassServiceTests
         }
 
         [Fact]
-        public async Task UpdateClass_ValidRequest_ReturnsError()
+        public async Task UpdateClass_ValidRequest_UpdatesClass()
         {
             // Arrange.
 
@@ -137,7 +137,7 @@ namespace Tests.ClassServiceTests
             // Assert.
 
             TestSuccess(result);
-            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+            result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
 
             Class? updatedClass = await classRepository.GetClassByIdAsync(clss1.Id.ToString());
             updatedClass.Should().NotBeNull();

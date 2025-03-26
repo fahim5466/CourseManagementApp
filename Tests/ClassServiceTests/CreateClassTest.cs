@@ -41,9 +41,9 @@ namespace Tests.ClassServiceTests
 
             // Assert.
 
-            TestError<BadCreateClassRequest>(result);
+            TestError<BadClassCreateOrUpdateRequest>(result);
 
-            BadCreateClassRequest badCreateClassRequest = (BadCreateClassRequest)result.ProblemDetails!;
+            BadClassCreateOrUpdateRequest badCreateClassRequest = (BadClassCreateOrUpdateRequest)result.ProblemDetails!;
             badCreateClassRequest.Errors.Should().NotBeNull();
 
             if(caseNo == 1)
