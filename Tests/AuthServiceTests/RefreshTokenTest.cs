@@ -43,12 +43,9 @@ namespace Tests.AuthServiceTests
             CryptoHasher cryptoHasher = new();
             SecurityTokenProvider securityTokenProvider = new(configuration);
 
-            Fixture fixture = new();
-            User user = fixture.Build<User>()
-                               .With(u => u.RefreshTokenHash, cryptoHasher.SimpleHash("abcd"))
-                               .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(10))
-                               .With(u => u.Roles, [])
-                               .Create();
+            User user = UserFixture().With(u => u.RefreshTokenHash, cryptoHasher.SimpleHash("abcd"))
+                                     .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(10))
+                                     .Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);
@@ -79,12 +76,9 @@ namespace Tests.AuthServiceTests
             string refreshToken = securityTokenProvider.CreateRefreshToken();
             string refreshTokenHash = cryptoHasher.SimpleHash(refreshToken);
 
-            Fixture fixture = new();
-            User user = fixture.Build<User>()
-                               .With(u => u.RefreshTokenHash, refreshTokenHash)
-                               .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(-10))
-                               .With(u => u.Roles, [])
-                               .Create();
+            User user = UserFixture().With(u => u.RefreshTokenHash, refreshTokenHash)
+                                     .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(-10))
+                                     .Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);
@@ -115,12 +109,9 @@ namespace Tests.AuthServiceTests
             string refreshToken = securityTokenProvider.CreateRefreshToken();
             string refreshTokenHash = cryptoHasher.SimpleHash(refreshToken);
 
-            Fixture fixture = new();
-            User user = fixture.Build<User>()
-                               .With(u => u.RefreshTokenHash, refreshTokenHash)
-                               .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(10))
-                               .With(u => u.Roles, [])
-                               .Create();
+            User user = UserFixture().With(u => u.RefreshTokenHash, refreshTokenHash)
+                                     .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(10))
+                                     .Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);

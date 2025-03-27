@@ -43,6 +43,13 @@ namespace Tests.Helpers
                           .With(x => x.Roles, []);
         }
 
+        public static IPostprocessComposer<Role> RoleFixture()
+        {
+            Fixture fixture = new Fixture();
+            return fixture.Build<Role>()
+                          .With(x => x.Users, []);
+        }
+
         public static IPostprocessComposer<Class> ClassFixture()
         {
             Fixture fixture = new Fixture();

@@ -39,15 +39,13 @@ namespace Tests.AuthServiceTests
         public async Task VerifyEmail_ExpiredToken_GeneratesNewToken()
         {
             // Arrange.
-            Fixture fixture = new();
+
             string verificationToken = "abc";
             DateTime verificationTokenExpires = DateTime.UtcNow.AddMinutes(-10);
 
-            User user = fixture.Build<User>()
-                               .With(u => u.EmailVerificationToken, verificationToken)
-                               .With(u => u.EmailVerificationTokenExpires, verificationTokenExpires)
-                               .Without(u => u.Roles)
-                               .Create();
+            User user = UserFixture().With(u => u.EmailVerificationToken, verificationToken)
+                                     .With(u => u.EmailVerificationTokenExpires, verificationTokenExpires)
+                                     .Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);
@@ -73,15 +71,13 @@ namespace Tests.AuthServiceTests
         public async Task VerifyEmail_ValidToken_VerifiesEmail()
         {
             // Arrange.
-            Fixture fixture = new();
+
             string verificationToken = "abc";
             DateTime verificationTokenExpires = DateTime.UtcNow.AddMinutes(10);
 
-            User user = fixture.Build<User>()
-                               .With(u => u.EmailVerificationToken, verificationToken)
-                               .With(u => u.EmailVerificationTokenExpires, verificationTokenExpires)
-                               .Without(u => u.Roles)
-                               .Create();
+            User user = UserFixture().With(u => u.EmailVerificationToken, verificationToken)
+                                     .With(u => u.EmailVerificationTokenExpires, verificationTokenExpires)
+                                     .Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);

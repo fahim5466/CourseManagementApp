@@ -76,11 +76,9 @@ namespace Tests.AuthServiceTests
             Fixture fixture = new();
             CryptoHasher cryptoHasher = new();
 
-            User user = fixture.Build<User>()
-                               .With(x => x.Email, "test@email.com")
-                               .With(x => x.PasswordHash, cryptoHasher.EnhancedHash("testpass"))
-                               .With(x => x.Roles, [])
-                               .Create();
+            User user = UserFixture().With(x => x.Email, "test@email.com")
+                                     .With(x => x.PasswordHash, cryptoHasher.EnhancedHash("testpass"))
+                                     .Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);
@@ -109,12 +107,10 @@ namespace Tests.AuthServiceTests
             Fixture fixture = new();
             CryptoHasher cryptoHasher = new();
 
-            User user = fixture.Build<User>()
-                               .With(x => x.Email, "test@email.com")
-                               .With(x => x.PasswordHash, cryptoHasher.EnhancedHash("testpass"))
-                               .With(x => x.IsEmailVerified, false)
-                               .With(x => x.Roles, [])
-                               .Create();
+            User user = UserFixture().With(x => x.Email, "test@email.com")
+                                     .With(x => x.PasswordHash, cryptoHasher.EnhancedHash("testpass"))
+                                     .With(x => x.IsEmailVerified, false)
+                                     .Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);
@@ -145,10 +141,7 @@ namespace Tests.AuthServiceTests
             CryptoHasher cryptoHasher = new();
             SecurityTokenProvider securityTokenProvider = new(configuration);
 
-            Role adminRole = fixture.Build<Role>()
-                                    .With(x => x.Name, Role.ADMIN)
-                                    .With(x => x.Users, [])
-                                    .Create();
+            Role adminRole = RoleFixture().With(x => x.Name, Role.ADMIN).Create();
 
             User user = fixture.Build<User>()
                                .With(x => x.Email, "test@email.com")

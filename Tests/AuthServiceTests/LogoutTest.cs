@@ -19,10 +19,7 @@ namespace Tests.AuthServiceTests
             // Arrange.
 
             Fixture fixture = new Fixture();
-            User user = fixture.Build<User>()
-                               .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(-10))
-                               .With(u => u.Roles, [])
-                               .Create();
+            User user = UserFixture().With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(-10)).Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);

@@ -16,7 +16,7 @@ using static Tests.UserServiceTests.UserServiceTestHelper;
 
 namespace Tests.UserServiceTests
 {
-    public class RegisterTest
+    public class RegisterUserTest
     {
         [Fact]
         public async Task RegisterStudent_EmptyRequestValues_ReturnsValidationErrorAsync()
@@ -82,11 +82,7 @@ namespace Tests.UserServiceTests
         public async Task RegisterStudent_UserAlreadyExists_ReturnsError()
         {
             // Arrange.
-            Fixture fixture = new();
-            User existingUser = fixture.Build<User>()
-                                       .With(u => u.Email, "test@test.com")
-                                       .Without(u => u.Roles)
-                                       .Create();
+            User existingUser = UserFixture().With(u => u.Email, "test@test.com").Create();
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [existingUser]);
