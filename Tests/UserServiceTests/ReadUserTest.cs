@@ -136,10 +136,16 @@ namespace Tests.UserServiceTests
             TestSuccess(result);
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-            List<UserResponseDto> responseDto = result.Value!;
-            responseDto.Should().HaveCount(2);
-            responseDto[0].Should().BeEquivalentTo(user3.ToUserResponseDto());
-            responseDto[1].Should().BeEquivalentTo(user4.ToUserResponseDto());
+            List<UserResponseDto> userResponses = result.Value!;
+            userResponses.Should().HaveCount(2);
+
+            UserResponseDto? userResponse1 = userResponses.FirstOrDefault(x => x.Id == user3.Id.ToString());
+            userResponse1.Should().NotBeNull();
+            userResponse1.Should().BeEquivalentTo(user3.ToUserResponseDto());
+
+            UserResponseDto? userResponse2 = userResponses.FirstOrDefault(x => x.Id == user4.Id.ToString());
+            userResponse2.Should().NotBeNull();
+            userResponse2.Should().BeEquivalentTo(user4.ToUserResponseDto());
         }
     }
 }

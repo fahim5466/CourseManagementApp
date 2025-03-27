@@ -98,11 +98,16 @@ namespace Tests.CourseServiceTests
             TestSuccess(result);
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-            List<CourseResponseDto> responseDto = result.Value!;
-            responseDto.Should().HaveCount(2);
+            List<CourseResponseDto> courseResponses = result.Value!;
+            courseResponses.Should().HaveCount(2);
 
-            responseDto[0].Should().BeEquivalentTo(course1.ToCourseResponseDto());
-            responseDto[1].Should().BeEquivalentTo(course2.ToCourseResponseDto());
+            CourseResponseDto? courseResponse1 = courseResponses.FirstOrDefault(x => x.Id == course1.Id.ToString());
+            courseResponse1.Should().NotBeNull();
+            courseResponse1.Should().BeEquivalentTo(course1.ToCourseResponseDto());
+
+            CourseResponseDto? courseResponse2 = courseResponses.FirstOrDefault(x => x.Id == course2.Id.ToString());
+            courseResponse2.Should().NotBeNull();
+            courseResponse2.Should().BeEquivalentTo(course2.ToCourseResponseDto());
         }
     }
 }

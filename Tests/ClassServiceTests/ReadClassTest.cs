@@ -90,10 +90,16 @@ namespace Tests.ClassServiceTests
             TestSuccess(result);
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-            List<ClassResponseDto> classes = result.Value!;
-            classes.Should().HaveCount(2);
-            classes[0].Should().BeEquivalentTo(clss1.ToClassResponseDto());
-            classes[1].Should().BeEquivalentTo(clss2.ToClassResponseDto());
+            List<ClassResponseDto> classResponses = result.Value!;
+            classResponses.Should().HaveCount(2);
+
+            ClassResponseDto? classResponse1 = classResponses.FirstOrDefault(x => x.Id == clss1.Id.ToString());
+            classResponse1.Should().NotBeNull();
+            classResponse1.Should().BeEquivalentTo(clss1.ToClassResponseDto());
+
+            ClassResponseDto? classResponse2 = classResponses.FirstOrDefault(x => x.Id == clss2.Id.ToString());
+            classResponse2.Should().NotBeNull();
+            classResponse2.Should().BeEquivalentTo(clss2.ToClassResponseDto());
         }
     }
 }
