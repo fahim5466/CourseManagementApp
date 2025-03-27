@@ -13,9 +13,18 @@ namespace Web.API.Controllers
     {
         [HttpPost]
         [Route("register/student")]
-        public async Task<IActionResult> RegisterStudentAsync(RegisterUserRequestDto request)
+        public async Task<IActionResult> RegisterStudentAsync(UserRequestDto request)
         {
             Result result = await userService.RegisterStudentAsync(request, HttpHelpers.GetHostPathPrefix(HttpContext));
+
+            return ApiResult(result);
+        }
+
+        [HttpPost]
+        [Route("student/update")]
+        public async Task<IActionResult> UpdateStudentAsync(string id, UserRequestDto request)
+        {
+            Result result = await userService.UpdateStudentAsync(id, request, HttpHelpers.GetHostPathPrefix(HttpContext));
 
             return ApiResult(result);
         }

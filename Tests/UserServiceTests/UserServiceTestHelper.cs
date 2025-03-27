@@ -19,7 +19,7 @@ namespace Tests.UserServiceTests
             ISecurityTokenProvider securityTokenProvider = new SecurityTokenProvider(configuration);
             IUserRepository userRepository = new UserRepository(dbContext);
 
-            return new(userRepository, cryptoHasher, securityTokenProvider, GetMockEmailService(), configuration);
+            return new(userRepository, cryptoHasher, securityTokenProvider, GetMockEmailService(), configuration, dbContext);
         }
     }
 }

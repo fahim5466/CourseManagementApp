@@ -1,18 +1,18 @@
 ﻿using Application.DTOs.User;
 using Application.Services;
-using Tests.Helpers;
-using static Tests.Helpers.TestHelper;
-using static Application.Helpers.ResultHelper;
-using static Tests.UserServiceTests.UserServiceTestHelper;
-using static Application.Errors.UserErrors;
-using FluentAssertions;
-using EntityFrameworkCoreMock;
-using Infrastructure.Database;
 using AutoFixture;
-using Microsoft.AspNetCore.Http;
-using Infrastructure.Security;
-using Infrastructure.Repositories;
 using Domain.Entities;
+using EntityFrameworkCoreMock;
+using FluentAssertions;
+using Infrastructure.Database;
+using Infrastructure.Repositories;
+using Infrastructure.Security;
+using Microsoft.AspNetCore.Http;
+using Tests.Helpers;
+using static Application.Errors.UserErrors;
+using static Application.Helpers.ResultHelper;
+using static Tests.Helpers.TestHelper;
+using static Tests.UserServiceTests.UserServiceTestHelper;
 
 namespace Tests.UserServiceTests
 {
@@ -25,7 +25,7 @@ namespace Tests.UserServiceTests
 
             UserService userService = GetUserService(MockDependencyHelper.GetMockDbContext().Object);
 
-            RegisterUserRequestDto request = new() { Email = string.Empty, Password = string.Empty, Name = string.Empty };
+            UserRequestDto request = new() { Email = string.Empty, Password = string.Empty, Name = string.Empty };
 
             // Act.
 
@@ -33,19 +33,19 @@ namespace Tests.UserServiceTests
 
             // Assert.
 
-            TestError<BadRegisterUserRequest>(result);
+            TestError<BadRegisterOrUpdateUserRequest>(result);
 
-            BadRegisterUserRequest badRequest = (BadRegisterUserRequest)result.ProblemDetails!;
+            BadRegisterOrUpdateUserRequest badRequest = (BadRegisterOrUpdateUserRequest)result.ProblemDetails!;
             badRequest.Errors.Should().NotBeNull();
 
-            badRequest.Errors.Should().ContainKey(nameof(RegisterUserRequestDto.Email));
-            badRequest.Errors[nameof(RegisterUserRequestDto.Email)].Should().Contain(RegisterUserRequestDto.EMAIL_REQ_ERR_MSG);
+            badRequest.Errors.Should().ContainKey(nameof(UserRequestDto.Email));
+            badRequest.Errors[nameof(UserRequestDto.Email)].Should().Contain(UserRequestDto.EMAIL_REQ_ERR_MSG);
 
-            badRequest.Errors.Should().ContainKey(nameof(RegisterUserRequestDto.Password));
-            badRequest.Errors[nameof(RegisterUserRequestDto.Password)].Should().Contain(RegisterUserRequestDto.PASSWORD_REQ_ERR_MSG);
+            badRequest.Errors.Should().ContainKey(nameof(UserRequestDto.Password));
+            badRequest.Errors[nameof(UserRequestDto.Password)].Should().Contain(UserRequestDto.PASSWORD_REQ_ERR_MSG);
 
-            badRequest.Errors.Should().ContainKey(nameof(RegisterUserRequestDto.Name));
-            badRequest.Errors[nameof(RegisterUserRequestDto.Name)].Should().Contain(RegisterUserRequestDto.NAME_REQ_ERR_MSG);
+            badRequest.Errors.Should().ContainKey(nameof(UserRequestDto.Name));
+            badRequest.Errors[nameof(UserRequestDto.Name)].Should().Contain(UserRequestDto.NAME_REQ_ERR_MSG);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Tests.UserServiceTests
 
             UserService userService = GetUserService(MockDependencyHelper.GetMockDbContext().Object);
 
-            RegisterUserRequestDto request = new() { Email = "a", Password = "1", Name = "b"};
+            UserRequestDto request = new() { Email = "a", Password = "1", Name = "b"};
 
             // Act.
 
@@ -63,19 +63,19 @@ namespace Tests.UserServiceTests
 
             // Assert.
 
-            TestError<BadRegisterUserRequest>(result);
+            TestError<BadRegisterOrUpdateUserRequest>(result);
 
-            BadRegisterUserRequest badRequest = (BadRegisterUserRequest)result.ProblemDetails!;
+            BadRegisterOrUpdateUserRequest badRequest = (BadRegisterOrUpdateUserRequest)result.ProblemDetails!;
             badRequest.Errors.Should().NotBeNull();
 
-            badRequest.Errors.Should().ContainKey(nameof(RegisterUserRequestDto.Email));
-            badRequest.Errors[nameof(RegisterUserRequestDto.Email)].Should().Contain(RegisterUserRequestDto.EMAIL_FORMAT_ERR_MSG);
+            badRequest.Errors.Should().ContainKey(nameof(UserRequestDto.Email));
+            badRequest.Errors[nameof(UserRequestDto.Email)].Should().Contain(UserRequestDto.EMAIL_FORMAT_ERR_MSG);
 
-            badRequest.Errors.Should().ContainKey(nameof(RegisterUserRequestDto.Password));
-            badRequest.Errors[nameof(RegisterUserRequestDto.Password)].Should().Contain(RegisterUserRequestDto.PASSWORD_MINLEN_ERR_MSG);
+            badRequest.Errors.Should().ContainKey(nameof(UserRequestDto.Password));
+            badRequest.Errors[nameof(UserRequestDto.Password)].Should().Contain(UserRequestDto.PASSWORD_MINLEN_ERR_MSG);
 
-            badRequest.Errors.Should().ContainKey(nameof(RegisterUserRequestDto.Name));
-            badRequest.Errors[nameof(RegisterUserRequestDto.Name)].Should().Contain(RegisterUserRequestDto.NAME_MINLEN_ERR_MSG);
+            badRequest.Errors.Should().ContainKey(nameof(UserRequestDto.Name));
+            badRequest.Errors[nameof(UserRequestDto.Name)].Should().Contain(UserRequestDto.NAME_MINLEN_ERR_MSG);
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace Tests.UserServiceTests
 
             UserService userService = GetUserService(mockDbContext.Object);
 
-            RegisterUserRequestDto request = new() { Email = existingUser.Email, Name = "abcde", Password = "abcde" };
+            UserRequestDto request = new() { Email = existingUser.Email, Name = "abcde", Password = "abcde" };
 
             // Act.
 
@@ -119,7 +119,7 @@ namespace Tests.UserServiceTests
             UserRepository userRepository = new(dbContext);
             UserService userService = GetUserService(dbContext);
 
-            RegisterUserRequestDto request = new() { Email = "test@test.com", Name = "test_name", Password = "test_pass" };
+            UserRequestDto request = new() { Email = "test@test.com", Name = "test_name", Password = "test_pass" };
             CryptoHasher cryptoHasher = new();
 
             // Act.

@@ -13,20 +13,21 @@ namespace Application.Services
 {
     public interface IUserService
     {
-        public Task<Result> RegisterStudentAsync(RegisterUserRequestDto request, string pathPreix);
+        public Task<Result> RegisterStudentAsync(UserRequestDto request, string pathPreix);
+        public Task<Result> UpdateStudentAsync(string id, UserRequestDto request, string pathPrefix);
         public Task<Result<UserResponseDto>> GetStudentByIdAsync(string id);
         public Task<Result<List<UserResponseDto>>> GetAllStudentsAsync();
     }
 
-    public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IConfiguration configuration) : IUserService
+    public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IConfiguration configuration, IUnitOfWork unitOfWork) : IUserService
     {
-        public async Task<Result> RegisterStudentAsync(RegisterUserRequestDto request, string pathPrefix)
+        public async Task<Result> RegisterStudentAsync(UserRequestDto request, string pathPrefix)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
             if(!validationOutcome.IsValid)
             {
-                return Result.Failure(new BadRegisterUserRequest(validationOutcome.Errors));
+                return Result.Failure(new BadRegisterOrUpdateUserRequest(validationOutcome.Errors));
             }
 
             // Email has to be unique.
@@ -56,6 +57,57 @@ namespace Application.Services
             Result result = Result.Success(StatusCodes.Status201Created);
 
             return result;
+        }
+
+        public async Task<Result> UpdateStudentAsync(string id, UserRequestDto request, string pathPrefix)
+        {
+            // Validate request.
+            ValidationOutcome validationOutcome = Validate(request);
+            if (!validationOutcome.IsValid)
+            {
+                return Result.Failure(new BadRegisterOrUpdateUserRequest(validationOutcome.Errors));
+            }
+
+            // Student does not exist.
+            User? student = await userRepository.GetStudentByIdAsync(id);
+            if (student is null)
+            {
+                return Result.Failure(new StudentDoesNotExist());
+            }
+
+            bool emailChanged = student.Email != request.Email;
+            if(emailChanged)
+            {
+                // Email has to be unique.
+                User? existingUser = await userRepository.GetUserByEmailAsync(request.Email);
+                if (existingUser is not null)
+                {
+                    return Result.Failure(new UserAlreadyExistsError());
+                }
+            }
+
+            student.Name = request.Name;
+            student.Email = request.Email;
+            student.PasswordHash = cryptoHasher.EnhancedHash(request.Password);
+
+            if(emailChanged)
+            {
+                string emailVerificationToken = securityTokenProvider.CreateEmailVerificationToken();
+                int emailVerificationTokenExpiration = Int32.Parse(configuration["Email:VerificationTokenExpirationInMinutes"]!);
+
+                student.IsEmailVerified = false;
+                student.EmailVerificationToken = emailVerificationToken;
+                student.EmailVerificationTokenExpires = DateTime.UtcNow.AddMinutes(emailVerificationTokenExpiration);
+            }
+
+            await unitOfWork.SaveChangesAsync();
+
+            if(emailChanged)
+            {
+                await emailService.SendEmailVerificationLinkAsync(student.Email, pathPrefix, student.EmailVerificationToken!);
+            }
+
+            return Result.Success(StatusCodes.Status204NoContent);
         }
 
         public async Task<Result<UserResponseDto>> GetStudentByIdAsync(string id)

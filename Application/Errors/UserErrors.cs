@@ -8,13 +8,13 @@ namespace Application.Errors
     {
         private const string USER_ERROR_PATH = "user";
 
-        public class BadRegisterUserRequest : ValidationProblemDetails
+        public class BadRegisterOrUpdateUserRequest : ValidationProblemDetails
         {
-            public BadRegisterUserRequest(Dictionary<string, List<string>> errors) : base(errors.ToModelStateDictionary())
+            public BadRegisterOrUpdateUserRequest(Dictionary<string, List<string>> errors) : base(errors.ToModelStateDictionary())
             {
                 Status = StatusCodes.Status400BadRequest;
-                Type = $"{USER_ERROR_PATH}/bad-register-user-request";
-                Title = "The register user request has one or more validation errors";
+                Type = $"{USER_ERROR_PATH}/bad-register-or-update-user-request";
+                Title = "The register/update user request has one or more validation errors";
             }
         }
 

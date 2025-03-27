@@ -3,7 +3,7 @@ using static Domain.Entities.User;
 
 namespace Application.DTOs.User
 {
-    public class RegisterUserRequestDto : IRequestDto
+    public class UserRequestDto : IRequestDto
     {
         public const string EMAIL_REQ_ERR_MSG = "Email is required";
         public const string EMAIL_MAXLENGTH_ERR_MSG = $"Email is too long";
