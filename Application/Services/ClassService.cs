@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Class;
+﻿using Application.DTOs;
+using Application.DTOs.Class;
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -29,7 +30,7 @@ namespace Application.Services
                 return Result<ClassResponseDto>.Failure(new ClassDoesNotExistError());
             }
 
-            return Result<ClassResponseDto>.Success(StatusCodes.Status200OK, new ClassResponseDto { Id = clss.Id.ToString(), Name = clss.Name });
+            return Result<ClassResponseDto>.Success(StatusCodes.Status200OK, clss.ToClassResponseDto());
         }
 
         public async Task<Result<List<ClassResponseDto>>> GetAllClassesAsync()
@@ -37,7 +38,7 @@ namespace Application.Services
             List<Class> classes = await classRepository.GetAllClassesAsync();
 
             return Result<List<ClassResponseDto>>.Success(StatusCodes.Status200OK,
-                        classes.Select(c => new ClassResponseDto { Id = c.Id.ToString(), Name = c.Name }).ToList());
+                        classes.Select(c => c.ToClassResponseDto()).ToList());
         }
 
         public async Task<Result> CreateClassAsync(ClassRequestDto request)

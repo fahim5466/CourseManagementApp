@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Class;
+﻿using Application.DTOs;
+using Application.DTOs.Class;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
@@ -63,8 +64,7 @@ namespace Tests.ClassServiceTests
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
             ClassResponseDto classResponseDto = result.Value!;
-            classResponseDto.Id.Should().BeEquivalentTo(clss.Id.ToString());
-            classResponseDto.Name.Should().BeEquivalentTo(clss.Name);
+            classResponseDto.Should().BeEquivalentTo(clss.ToClassResponseDto());
         }
 
         [Fact]
@@ -92,8 +92,8 @@ namespace Tests.ClassServiceTests
 
             List<ClassResponseDto> classes = result.Value!;
             classes.Should().HaveCount(2);
-            classes[0].Id.Should().BeEquivalentTo(clss1.Id.ToString());
-            classes[1].Id.Should().BeEquivalentTo(clss2.Id.ToString());
+            classes[0].Should().BeEquivalentTo(clss1.ToClassResponseDto());
+            classes[1].Should().BeEquivalentTo(clss2.ToClassResponseDto());
         }
     }
 }

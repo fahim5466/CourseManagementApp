@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Course;
+﻿using Application.DTOs;
+using Application.DTOs.Course;
 using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -31,8 +32,7 @@ namespace Application.Services
                 return Result<CourseResponseDto>.Failure(new CourseDoesNotExistError());
             }
 
-            return Result<CourseResponseDto>.Success(StatusCodes.Status200OK,
-                            new() { Id = course.Id.ToString(), Name = course.Name, ClassNames = course.Classes.Select(c => c.Name).ToList() });
+            return Result<CourseResponseDto>.Success(StatusCodes.Status200OK, course.ToCourseResponseDto());
         }
 
         public async Task<Result<List<CourseResponseDto>>> GetAllCoursesAsync()
@@ -40,14 +40,7 @@ namespace Application.Services
             List<Course> courses = await courseRepository.GetAllCoursesAsync();
 
             return Result<List<CourseResponseDto>>.Success(StatusCodes.Status200OK,
-                    courses.Select(course => 
-                            new CourseResponseDto()
-                            { 
-                                Id = course.Id.ToString(),
-                                Name = course.Name,
-                                ClassNames = course.Classes.Select(c => c.Name).ToList() 
-                            })
-                         .ToList());
+                    courses.Select(course => course.ToCourseResponseDto()).ToList());
         }
 
         public async Task<Result> CreateCourseAsync(CourseRequestDto request)

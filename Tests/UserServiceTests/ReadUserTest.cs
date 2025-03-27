@@ -14,6 +14,7 @@ using Infrastructure.Security;
 using Infrastructure.Repositories;
 using Domain.Entities;
 using Domain.Relationships;
+using static Application.DTOs.DTOHelper;
 
 namespace Tests.UserServiceTests
 {
@@ -53,9 +54,6 @@ namespace Tests.UserServiceTests
             // Arrange.
 
             Role adminRole = new() { Id = Guid.NewGuid(), Name = Role.ADMIN };
-            User user = UserFixture().With(x => x.Id, Guid.NewGuid())
-                                     .With(x => x.Roles, [adminRole])
-                                     .Create();
 
             User user = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
 
@@ -106,10 +104,7 @@ namespace Tests.UserServiceTests
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
             UserResponseDto responseDto = result.Value!;
-            responseDto.Id.Should().Be(user.Id.ToString());
-            responseDto.Name.Should().Be(user.Name);
-            responseDto.Email.Should().Be(user.Email);
-            responseDto.IsEmailVerified.Should().Be(user.IsEmailVerified);
+            responseDto.Should().BeEquivalentTo(user.ToUserResponseDto());
         }
     }
 }

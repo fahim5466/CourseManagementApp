@@ -1,3 +1,4 @@
+﻿using Application.DTOs;
 ﻿using Application.DTOs.User;
 using Application.Interfaces;
 using Domain.Entities;
@@ -66,14 +67,7 @@ namespace Application.Services
                 return Result<UserResponseDto>.Failure(new StudentDoesNotExist());
             }
 
-            return Result<UserResponseDto>.Success(StatusCodes.Status200OK,
-                                                    new UserResponseDto()
-                                                    {
-                                                        Id = student.Id.ToString(),
-                                                        Name = student.Name,
-                                                        Email = student.Email,
-                                                        IsEmailVerified = student.IsEmailVerified
-                                                    });
+            return Result<UserResponseDto>.Success(StatusCodes.Status200OK, student.ToUserResponseDto());
         }
     }
 }

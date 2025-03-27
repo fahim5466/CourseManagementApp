@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Course;
+﻿using Application.DTOs;
+using Application.DTOs.Course;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
@@ -64,11 +65,7 @@ namespace Tests.CourseServiceTests
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
             CourseResponseDto courseResponseDto = result.Value!;
-            courseResponseDto.Id.Should().BeEquivalentTo(course.Id.ToString());
-            courseResponseDto.Name.Should().BeEquivalentTo(course.Name);
-            courseResponseDto.ClassNames.Should().HaveCount(2);
-            courseResponseDto.ClassNames[0].Should().Be(clss1.Name);
-            courseResponseDto.ClassNames[1].Should().Be(clss2.Name);
+            courseResponseDto.Should().BeEquivalentTo(course.ToCourseResponseDto());
         }
 
         [Fact]
@@ -104,17 +101,8 @@ namespace Tests.CourseServiceTests
             List<CourseResponseDto> responseDto = result.Value!;
             responseDto.Should().HaveCount(2);
 
-            responseDto[0].Id.Should().BeEquivalentTo(course1.Id.ToString());
-            responseDto[0].Name.Should().BeEquivalentTo(course1.Name);
-            responseDto[0].ClassNames.Should().HaveCount(2);
-            responseDto[0].ClassNames[0].Should().Be(clss1.Name);
-            responseDto[0].ClassNames[1].Should().Be(clss2.Name);
-
-            responseDto[1].Id.Should().BeEquivalentTo(course2.Id.ToString());
-            responseDto[1].Name.Should().BeEquivalentTo(course2.Name);
-            responseDto[1].ClassNames.Should().HaveCount(2);
-            responseDto[1].ClassNames[0].Should().Be(clss1.Name);
-            responseDto[1].ClassNames[1].Should().Be(clss3.Name);
+            responseDto[0].Should().BeEquivalentTo(course1.ToCourseResponseDto());
+            responseDto[1].Should().BeEquivalentTo(course2.ToCourseResponseDto());
         }
     }
 }
