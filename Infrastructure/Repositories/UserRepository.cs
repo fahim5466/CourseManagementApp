@@ -2,7 +2,6 @@
 using Domain.Repositories;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -35,6 +34,19 @@ namespace Infrastructure.Repositories
         public async Task<User?> GetUserByEmailVerificationTokenAsync(string token)
         {
             return await dbContext.Users.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+        }
+
+        public async Task<User?> GetStudentByIdAsync(string id)
+        {
+            if(!Guid.TryParse(id, out Guid guid))
+            {
+                return null;
+            }
+
+            return await dbContext.Users
+                                  .FirstOrDefaultAsync(u => u.Id == guid &&
+                                                       u.Roles.Select(r => r.Name).Contains(Role.STUDENT));
+
         }
     }
 }

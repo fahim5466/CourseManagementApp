@@ -13,6 +13,7 @@ namespace Application.Services
     public interface IUserService
     {
         public Task<Result> RegisterStudentAsync(RegisterUserRequestDto request, string pathPreix);
+        public Task<Result<UserResponseDto>> GetStudentByIdAsync(string id);
     }
 
     public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IConfiguration configuration) : IUserService
@@ -53,6 +54,26 @@ namespace Application.Services
             Result result = Result.Success(StatusCodes.Status201Created);
 
             return result;
+        }
+
+        public async Task<Result<UserResponseDto>> GetStudentByIdAsync(string id)
+        {
+            User? student = await userRepository.GetStudentByIdAsync(id);
+
+            // Student does not exist.
+            if (student is null)
+            {
+                return Result<UserResponseDto>.Failure(new StudentDoesNotExist());
+            }
+
+            return Result<UserResponseDto>.Success(StatusCodes.Status200OK,
+                                                    new UserResponseDto()
+                                                    {
+                                                        Id = student.Id.ToString(),
+                                                        Name = student.Name,
+                                                        Email = student.Email,
+                                                        IsEmailVerified = student.IsEmailVerified
+                                                    });
         }
     }
 }

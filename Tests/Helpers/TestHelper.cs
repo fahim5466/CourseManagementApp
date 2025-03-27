@@ -36,6 +36,13 @@ namespace Tests.Helpers
             result.ProblemDetails.Should().BeAssignableTo<TError>();
         }
 
+        public static IPostprocessComposer<User> UserFixture()
+        {
+            Fixture fixture = new Fixture();
+            return fixture.Build<User>()
+                          .With(x => x.Roles, []);
+        }
+
         public static IPostprocessComposer<Class> ClassFixture()
         {
             Fixture fixture = new Fixture();

@@ -2,7 +2,6 @@
 using Application.Interfaces;
 using Application.Services;
 using Domain.Repositories;
-using FluentEmail.Core;
 using Infrastructure.Database;
 using Infrastructure.Notifications;
 using Infrastructure.Repositories;
@@ -11,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -33,6 +33,8 @@ namespace Infrastructure
 
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseNpgsql(connectionString)
+                                  .EnableSensitiveDataLogging()
+                                  .LogTo(Console.WriteLine, LogLevel.Information)
                                   .UseSnakeCaseNamingConvention());
 
             return services;

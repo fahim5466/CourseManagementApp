@@ -27,5 +27,15 @@ namespace Application.Errors
                 Title = "User with email already exists";
             }
         }
+
+        public class StudentDoesNotExist : ProblemDetails
+        {
+            public StudentDoesNotExist()
+            {
+                Status = StatusCodes.Status404NotFound;
+                Type = $"{USER_ERROR_PATH}/student-does-not-exist";
+                Title = "Student does not exist";
+            }
+        }
     }
 }
