@@ -21,7 +21,7 @@ namespace Tests.ClassServiceTests
         [Theory]
         [InlineData("1")]
         [InlineData("7E89EECB-7A95-48D6-A63B-FE6A4D7588F8")]
-        public async Task UpdateClass_InvalidId_ReturnsErrorAsync(string id)
+        public async Task DeleteClass_InvalidId_ReturnsError(string id)
         {
             // Arrange.
 

@@ -48,5 +48,15 @@ namespace Web.API.Controllers
 
             return ApiResult(result);
         }
+
+        [HttpGet]
+        [Route("course/delete")]
+        [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
+        public async Task<IActionResult> DeleteCourseAsync(string id)
+        {
+            Result result = await courseService.DeleteCourseAsync(id);
+
+            return ApiResult(result);
+        }
     }
 }

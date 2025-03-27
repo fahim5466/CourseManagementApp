@@ -42,5 +42,11 @@ namespace Infrastructure.Repositories
             dbContext.Courses.Add(course);
             await dbContext.SaveChangesAsync();
         }
+
+        public async Task DeleteCourseAsync(Course course)
+        {
+            dbContext.Courses.Remove(course);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }

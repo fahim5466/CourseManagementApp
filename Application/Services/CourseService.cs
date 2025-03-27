@@ -15,6 +15,7 @@ namespace Application.Services
         public Task<Result<List<CourseResponseDto>>> GetAllCoursesAsync();
         public Task<Result> CreateCourseAsync(CourseRequestDto request);
         public Task<Result> UpdateCourseAsync(string id, CourseRequestDto request);
+        public Task<Result> DeleteCourseAsync(string id);
     }
 
     public class CourseService(ICourseRepository courseRepository, IClassRepository classRepository, IUnitOfWork unitOfWork) : ICourseService
@@ -113,6 +114,21 @@ namespace Application.Services
             course.Name = request.Name;
             course.Classes = classes;
             await unitOfWork.SaveChangesAsync();
+
+            return Result.Success(StatusCodes.Status204NoContent);
+        }
+
+        public async Task<Result> DeleteCourseAsync(string id)
+        {
+            Course? course = await courseRepository.GetCourseByIdWithClassesAsync(id);
+
+            // Course does not exist.
+            if(course is null)
+            {
+                return Result.Failure(new CourseDoesNotExistError());
+            }
+
+            await courseRepository.DeleteCourseAsync(course);
 
             return Result.Success(StatusCodes.Status204NoContent);
         }

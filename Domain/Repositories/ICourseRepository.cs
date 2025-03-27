@@ -9,5 +9,6 @@ namespace Domain.Repositories
         public Task<Course?> GetCourseByNameAsync(string name, string idToExclude);
         public Task<List<Course>> GetAllCoursesAsync();
         public Task CreateCourseAsync(Course course);
+        public Task DeleteCourseAsync(Course course);
     }
 }
