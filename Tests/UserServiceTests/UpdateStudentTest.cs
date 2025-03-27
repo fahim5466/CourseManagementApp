@@ -1,20 +1,19 @@
 ﻿using Application.DTOs.User;
 using Application.Services;
-using Tests.Helpers;
-using static Tests.Helpers.TestHelper;
-using static Application.Helpers.ResultHelper;
-using static Tests.UserServiceTests.UserServiceTestHelper;
-using static Application.Errors.UserErrors;
-using FluentAssertions;
-using EntityFrameworkCoreMock;
-using Infrastructure.Database;
 using AutoFixture;
-using Microsoft.AspNetCore.Http;
-using Infrastructure.Security;
-using Infrastructure.Repositories;
 using Domain.Entities;
 using Domain.Relationships;
-using static Application.DTOs.DTOHelper;
+using EntityFrameworkCoreMock;
+using FluentAssertions;
+using Infrastructure.Database;
+using Infrastructure.Repositories;
+using Infrastructure.Security;
+using Microsoft.AspNetCore.Http;
+using Tests.Helpers;
+using static Application.Errors.UserErrors;
+using static Application.Helpers.ResultHelper;
+using static Tests.Helpers.TestHelper;
+using static Tests.UserServiceTests.UserServiceTestHelper;
 
 namespace Tests.UserServiceTests
 {

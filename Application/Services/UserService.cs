@@ -17,6 +17,7 @@ namespace Application.Services
         public Task<Result> UpdateStudentAsync(string id, UserRequestDto request, string pathPrefix);
         public Task<Result<UserResponseDto>> GetStudentByIdAsync(string id);
         public Task<Result<List<UserResponseDto>>> GetAllStudentsAsync();
+        public Task<Result> DeleteStudentAsync(string id);
     }
 
     public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IConfiguration configuration, IUnitOfWork unitOfWork) : IUserService
@@ -128,6 +129,20 @@ namespace Application.Services
             List<User> users = await userRepository.GetAllStudentsAsync();
 
             return Result<List<UserResponseDto>>.Success(StatusCodes.Status200OK, users.Select(u => u.ToUserResponseDto()).ToList());
+        }
+
+        public async Task<Result> DeleteStudentAsync(string id)
+        {
+            User? student = await userRepository.GetStudentByIdAsync(id);
+
+            if (student is null)
+            {
+                return Result.Failure(new StudentDoesNotExist());
+            }
+
+            await userRepository.DeleteUserAsync(student);
+
+            return Result.Success(StatusCodes.Status204NoContent);
         }
     }
 }

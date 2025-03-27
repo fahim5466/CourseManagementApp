@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
 
         public async Task CreateUserWithRolesAsync(User user, List<string> roleNames)
         {
-            List<Role> roles = dbContext.Roles.Where(r => roleNames.Contains(r.Name)).ToList();
+            List<Role> roles = await dbContext.Roles.Where(r => roleNames.Contains(r.Name)).ToListAsync();
 
             user.Roles = roles;
 
@@ -66,6 +66,12 @@ namespace Infrastructure.Repositories
                                      select user;
 
             return await query.ToListAsync();
+        }
+
+        public async Task DeleteUserAsync(User user)
+        {
+            dbContext.Users.Remove(user);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

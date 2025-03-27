@@ -15,5 +15,6 @@ namespace Domain.Repositories
         public Task<User?> GetStudentByIdAsync(string id);
 
         public Task<List<User>> GetAllStudentsAsync();
+        public Task DeleteUserAsync(User user);
     }
 }

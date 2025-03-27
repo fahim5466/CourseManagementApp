@@ -40,10 +40,13 @@ namespace Tests.AuthServiceTests
         {
             // Arrange.
             IConfiguration configuration = MockDependencyHelper.GetMockConfiguration();
+            CryptoHasher cryptoHasher = new();
             SecurityTokenProvider securityTokenProvider = new(configuration);
 
             Fixture fixture = new();
             User user = fixture.Build<User>()
+                               .With(u => u.RefreshTokenHash, cryptoHasher.SimpleHash("abcd"))
+                               .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(10))
                                .With(u => u.Roles, [])
                                .Create();
 

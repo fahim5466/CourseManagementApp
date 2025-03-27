@@ -47,5 +47,13 @@ namespace Web.API.Controllers
             return ApiResult(result);
         }
 
+        [HttpGet]
+        [Route("student/delete")]
+        public async Task<IActionResult> DeleteStudentAsync(string id)
+        {
+            Result result = await userService.DeleteStudentAsync(id);
+
+            return ApiResult(result);
+        }
     }
 }
