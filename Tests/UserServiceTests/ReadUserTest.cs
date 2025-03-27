@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Infrastructure.Security;
 using Infrastructure.Repositories;
 using Domain.Entities;
+using Domain.Relationships;
 
 namespace Tests.UserServiceTests
 {
@@ -25,10 +26,16 @@ namespace Tests.UserServiceTests
         {
             // Arrange.
 
+            Role studentRole = new() { Id = Guid.NewGuid(), Name = Role.STUDENT };
+
             User user = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
+
+            UserRole userRole = new() { UserId = user.Id, RoleId = studentRole.Id };
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
             UserService userService = GetUserService(mockDbContext.Object);
 
             // Act.
@@ -41,7 +48,7 @@ namespace Tests.UserServiceTests
         }
 
         [Fact]
-        public async Task GetStudentById_ValidIdButNotStudent_ReturnsErrorA()
+        public async Task GetStudentById_ValidIdButNotStudent_ReturnsError()
         {
             // Arrange.
 
@@ -50,8 +57,14 @@ namespace Tests.UserServiceTests
                                      .With(x => x.Roles, [adminRole])
                                      .Create();
 
+            User user = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
+
+            UserRole userRole = new() { UserId = user.Id, RoleId = adminRole.Id };
+
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [adminRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
             UserService userService = GetUserService(mockDbContext.Object);
 
             // Act.
@@ -64,7 +77,7 @@ namespace Tests.UserServiceTests
         }
 
         [Fact]
-        public async Task GetStudentById_ValidIdAndStudent_ReturnsErrorA()
+        public async Task GetStudentById_ValidIdAndStudent_ReturnsStudent()
         {
             // Arrange.
 
@@ -73,8 +86,14 @@ namespace Tests.UserServiceTests
                                      .With(x => x.Roles, [studentRole])
                                      .Create();
 
+            User user = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
+
+            UserRole userRole = new() { UserId = user.Id, RoleId = studentRole.Id };
+
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
             UserService userService = GetUserService(mockDbContext.Object);
 
             // Act.

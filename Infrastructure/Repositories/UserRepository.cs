@@ -43,10 +43,16 @@ namespace Infrastructure.Repositories
                 return null;
             }
 
-            return await dbContext.Users
-                                  .FirstOrDefaultAsync(u => u.Id == guid &&
-                                                       u.Roles.Select(r => r.Name).Contains(Role.STUDENT));
+            IQueryable<User> query = from user in dbContext.Users
+                                     join userRole in dbContext.UserRoles
+                                     on user.Id equals userRole.UserId
+                                     join role in dbContext.Roles
+                                     on userRole.RoleId equals role.Id
+                                     where user.Id == guid &&
+                                           role.Name == Role.STUDENT
+                                     select user;
 
+            return await query.FirstOrDefaultAsync();
         }
     }
 }
