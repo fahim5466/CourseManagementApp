@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250326202019_TestMigration")]
-    partial class TestMigration
+    [Migration("20250326202019_AddColumnOrderingToCourseClass")]
+    partial class AddColumnOrderingToCourseClass
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
