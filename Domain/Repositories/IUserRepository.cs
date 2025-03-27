@@ -13,5 +13,7 @@ namespace Domain.Repositories
         public Task<User?> GetUserByEmailVerificationTokenAsync(string token);
 
         public Task<User?> GetStudentByIdAsync(string id);
+
+        public Task<List<User>> GetAllStudentsAsync();
     }
 }

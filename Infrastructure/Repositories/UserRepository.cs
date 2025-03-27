@@ -54,5 +54,18 @@ namespace Infrastructure.Repositories
 
             return await query.FirstOrDefaultAsync();
         }
+
+        public async Task<List<User>> GetAllStudentsAsync()
+        {
+            IQueryable<User> query = from user in dbContext.Users
+                                     join userRole in dbContext.UserRoles
+                                     on user.Id equals userRole.UserId
+                                     join role in dbContext.Roles
+                                     on userRole.RoleId equals role.Id
+                                     where role.Name == Role.STUDENT
+                                     select user;
+
+            return await query.ToListAsync();
+        }
     }
 }

@@ -80,9 +80,6 @@ namespace Tests.UserServiceTests
             // Arrange.
 
             Role studentRole = new() { Id = Guid.NewGuid(), Name = Role.STUDENT };
-            User user = UserFixture().With(x => x.Id, Guid.NewGuid())
-                                     .With(x => x.Roles, [studentRole])
-                                     .Create();
 
             User user = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
 
@@ -105,6 +102,46 @@ namespace Tests.UserServiceTests
 
             UserResponseDto responseDto = result.Value!;
             responseDto.Should().BeEquivalentTo(user.ToUserResponseDto());
+        }
+
+        [Fact]
+        public async Task GetAllStudents__ReturnsStudents()
+        {
+            // Arrange.
+
+            Role adminRole = new() { Id = Guid.NewGuid(), Name = Role.ADMIN };
+            Role staffRole = new() { Id = Guid.NewGuid(), Name = Role.STAFF };
+            Role studentRole = new() { Id = Guid.NewGuid(), Name = Role.STUDENT };
+
+            User user1 = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            User user2 = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            User user3 = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            User user4 = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
+
+            UserRole userRole1 = new() { UserId = user1.Id, RoleId = adminRole.Id };
+            UserRole userRole2 = new() { UserId = user2.Id, RoleId = staffRole.Id };
+            UserRole userRole3 = new() { UserId = user3.Id, RoleId = studentRole.Id };
+            UserRole userRole4 = new() { UserId = user4.Id, RoleId = studentRole.Id };
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user1, user2, user3, user4]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [adminRole, staffRole, studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole1, userRole2, userRole3, userRole4]);
+            UserService userService = GetUserService(mockDbContext.Object);
+
+            // Act.
+
+            Result<List<UserResponseDto>> result = await userService.GetAllStudentsAsync();
+
+            // Assert.
+
+            TestSuccess(result);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            List<UserResponseDto> responseDto = result.Value!;
+            responseDto.Should().HaveCount(2);
+            responseDto[0].Should().BeEquivalentTo(user3.ToUserResponseDto());
+            responseDto[1].Should().BeEquivalentTo(user4.ToUserResponseDto());
         }
     }
 }

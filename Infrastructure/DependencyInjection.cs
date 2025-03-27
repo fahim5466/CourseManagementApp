@@ -33,7 +33,6 @@ namespace Infrastructure
 
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseNpgsql(connectionString)
-                                  .EnableSensitiveDataLogging()
                                   .LogTo(Console.WriteLine, LogLevel.Information)
                                   .UseSnakeCaseNamingConvention());
 

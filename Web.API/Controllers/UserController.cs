@@ -28,5 +28,15 @@ namespace Web.API.Controllers
 
             return ApiResult(result);
         }
+
+        [HttpGet]
+        [Route("students")]
+        public async Task<IActionResult> GetAllStudentsAsync()
+        {
+            Result<List<UserResponseDto>> result = await userService.GetAllStudentsAsync();
+
+            return ApiResult(result);
+        }
+
     }
 }

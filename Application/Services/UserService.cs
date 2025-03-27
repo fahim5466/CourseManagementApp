@@ -1,5 +1,5 @@
 ﻿using Application.DTOs;
-﻿using Application.DTOs.User;
+using Application.DTOs.User;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Repositories;
@@ -15,6 +15,7 @@ namespace Application.Services
     {
         public Task<Result> RegisterStudentAsync(RegisterUserRequestDto request, string pathPreix);
         public Task<Result<UserResponseDto>> GetStudentByIdAsync(string id);
+        public Task<Result<List<UserResponseDto>>> GetAllStudentsAsync();
     }
 
     public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IConfiguration configuration) : IUserService
@@ -68,6 +69,13 @@ namespace Application.Services
             }
 
             return Result<UserResponseDto>.Success(StatusCodes.Status200OK, student.ToUserResponseDto());
+        }
+
+        public async Task<Result<List<UserResponseDto>>> GetAllStudentsAsync()
+        {
+            List<User> users = await userRepository.GetAllStudentsAsync();
+
+            return Result<List<UserResponseDto>>.Success(StatusCodes.Status200OK, users.Select(u => u.ToUserResponseDto()).ToList());
         }
     }
 }
