@@ -1,11 +1,14 @@
-﻿using Domain.Relationships;
-using Application;
-using Microsoft.EntityFrameworkCore;
+﻿using Application;
+using Application.Interfaces;
 using Domain.Entities;
+using Domain.Interfaces;
+using Domain.Relationships;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.Database
 {
-    public class ApplicationDbContext : DbContext, IUnitOfWork
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpHelper httpHelper) : DbContext(options), IUnitOfWork
     {
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
@@ -13,11 +16,7 @@ namespace Infrastructure.Database
         public virtual DbSet<Class> Classes { get; set; }
         public virtual DbSet<Course> Courses { get; set; }
         public virtual DbSet<CourseClass> CourseClasses { get; set; }
-
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-
-        }
+        public virtual DbSet<ClassEnrollment> ClassEnrollments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -98,9 +97,30 @@ namespace Infrastructure.Database
             modelBuilder.Entity<UserRole>().HasData(new UserRole { UserId = studentUser.Id, RoleId = studentRole.Id });
         }
 
-        public Task<int> SaveChangesAsync()
+        public override int SaveChanges()
         {
-            return base.SaveChangesAsync();
+            SetAuditFields();
+            return base.SaveChanges();
         }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            SetAuditFields();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void SetAuditFields()
+        {
+            IEnumerable<EntityEntry> entries = ChangeTracker.Entries()
+                                                            .Where(e => e.Entity is IAuditable && e.State == EntityState.Added);
+
+            foreach (EntityEntry entry in entries)
+            {
+                IAuditable auditable = (IAuditable)entry.Entity;
+                auditable.CreatedBy = httpHelper.GetCurrentUserId();
+                auditable.CreatedOn = DateTime.UtcNow;
+            }
+        }
+
     }
 }

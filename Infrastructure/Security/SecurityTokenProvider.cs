@@ -27,7 +27,7 @@ namespace Infrastructure.Security
 
             List<Claim> claims =
             [
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
             ];
             claims.AddRange(user.Roles.Select(r => new Claim(ClaimTypes.Role, r.Name)));
