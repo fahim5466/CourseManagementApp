@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Microsoft.Extensions.Options;
 using Web.API.Filters;
+using Application.Interfaces;
 
 namespace Web.API
 {
@@ -17,6 +18,9 @@ namespace Web.API
             {
                 loggerConfiguration.ReadFrom.Configuration(context.Configuration);
             });
+
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<IHttpHelper, HttpHelper>();
 
             builder.Services.AddInfrastructure(builder.Configuration);
 

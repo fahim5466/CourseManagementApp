@@ -170,6 +170,7 @@ namespace Tests.AuthServiceTests
             // Assert
 
             TestSuccess(result);
+            result.Value.Should().NotBeNull();
 
             string jwtToken = result.Value.JwtToken;
             string refreshToken = result.Value.RefreshToken;

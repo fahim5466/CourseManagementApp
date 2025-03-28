@@ -28,7 +28,7 @@ namespace Tests.AuthServiceTests
 
             // Act.
 
-            Result result = await authService.VerifyEmailAsync(verificationToken, "random");
+            Result result = await authService.VerifyEmailAsync(verificationToken);
 
             // Assert.
 
@@ -55,7 +55,7 @@ namespace Tests.AuthServiceTests
 
             // Act.
 
-            Result result = await authService.VerifyEmailAsync(verificationToken, "random");
+            Result result = await authService.VerifyEmailAsync(verificationToken);
 
             // Assert.
 
@@ -87,7 +87,7 @@ namespace Tests.AuthServiceTests
 
             // Act.
 
-            Result result = await authService.VerifyEmailAsync(verificationToken, "random");
+            Result result = await authService.VerifyEmailAsync(verificationToken);
 
             // Assert.
 

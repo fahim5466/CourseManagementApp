@@ -36,7 +36,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request, string.Empty);
+            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
 
             // Assert.
 
@@ -72,7 +72,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request, string.Empty);
+            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
 
             // Assert.
 
@@ -112,7 +112,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(Guid.NewGuid().ToString(), request, string.Empty);
+            Result result = await userService.UpdateStudentAsync(Guid.NewGuid().ToString(), request);
 
             // Assert.
 
@@ -140,7 +140,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request, string.Empty);
+            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
 
             // Assert.
 
@@ -170,7 +170,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user1.Id.ToString(), request, string.Empty);
+            Result result = await userService.UpdateStudentAsync(user1.Id.ToString(), request);
 
             // Assert.
 
@@ -202,7 +202,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user1.Id.ToString(), request, string.Empty);
+            Result result = await userService.UpdateStudentAsync(user1.Id.ToString(), request);
 
             // Assert.
 

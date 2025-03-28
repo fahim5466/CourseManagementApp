@@ -14,13 +14,13 @@ namespace Application.Services
     public interface IAuthService
     {
         public Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto request);
-        public Task<Result> VerifyEmailAsync(string verificationToken, string pathPrefix);
+        public Task<Result> VerifyEmailAsync(string verificationToken);
         public Task<Result<RefreshTokenResponseDto>> RefreshTokenAsync(RefreshTokenRequestDto request);
         public Task<Result> LogoutAsync(string email);
     }
 
     public class AuthService(IConfiguration configuration, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider,
-                       IUserRepository userRepository, IUnitOfWork unitOfWork, IEmailService emailService) : IAuthService
+                       IUserRepository userRepository, IUnitOfWork unitOfWork, IEmailService emailService, IHttpHelper httpHelper) : IAuthService
     {
         public const string VERIFY_EMAIL_ROUTE = "verify/email";
 
@@ -63,7 +63,7 @@ namespace Application.Services
 
         }
 
-        public async Task<Result> VerifyEmailAsync(string verificationToken, string pathPrefix)
+        public async Task<Result> VerifyEmailAsync(string verificationToken)
         {
             // Token has to be matched with user.
             User? user = await userRepository.GetUserByEmailVerificationTokenAsync(verificationToken);
@@ -82,7 +82,7 @@ namespace Application.Services
                 user.EmailVerificationTokenExpires = DateTime.UtcNow.AddMinutes(emailVerificationTokenExpiration);
                 await unitOfWork.SaveChangesAsync();
 
-                await emailService.SendEmailVerificationLinkAsync(user.Email, pathPrefix, emailVerificationToken);
+                await emailService.SendEmailVerificationLinkAsync(user.Email, httpHelper.GetHostPathPrefix(), emailVerificationToken);
                 return Result.Failure(new ExpiredEmailVerificationToken());
             }
 

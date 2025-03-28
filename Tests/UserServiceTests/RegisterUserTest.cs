@@ -29,7 +29,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request, string.Empty);
+            Result result = await userService.RegisterStudentAsync(request);
 
             // Assert.
 
@@ -59,7 +59,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request, string.Empty);
+            Result result = await userService.RegisterStudentAsync(request);
 
             // Assert.
 
@@ -93,7 +93,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request, string.Empty);
+            Result result = await userService.RegisterStudentAsync(request);
 
             // Assert.
 
@@ -120,7 +120,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request, string.Empty);
+            Result result = await userService.RegisterStudentAsync(request);
 
             // Assert.
 

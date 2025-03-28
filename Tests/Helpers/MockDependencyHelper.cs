@@ -39,5 +39,16 @@ namespace Tests.Helpers
                             .Returns(Task.FromResult(true));
             return mockEmailService.Object;
         }
+
+        public static IHttpHelper GetMockHttpHelper()
+        {
+            Mock<IHttpHelper> mockHttpHelper = new Mock<IHttpHelper>();
+
+            mockHttpHelper.Setup(x => x.GetHostPathPrefix()).Returns(string.Empty);
+
+            mockHttpHelper.Setup(x => x.GetCurrentUserId()).Returns(Guid.Empty);
+
+            return mockHttpHelper.Object;
+        }
     }
 }

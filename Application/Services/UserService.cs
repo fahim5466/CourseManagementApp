@@ -13,16 +13,16 @@ namespace Application.Services
 {
     public interface IUserService
     {
-        public Task<Result> RegisterStudentAsync(UserRequestDto request, string pathPreix);
-        public Task<Result> UpdateStudentAsync(string id, UserRequestDto request, string pathPrefix);
+        public Task<Result> RegisterStudentAsync(UserRequestDto request);
+        public Task<Result> UpdateStudentAsync(string id, UserRequestDto request);
         public Task<Result<UserResponseDto>> GetStudentByIdAsync(string id);
         public Task<Result<List<UserResponseDto>>> GetAllStudentsAsync();
         public Task<Result> DeleteStudentAsync(string id);
     }
 
-    public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IConfiguration configuration, IUnitOfWork unitOfWork) : IUserService
+    public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IHttpHelper httpHelper, IConfiguration configuration, IUnitOfWork unitOfWork) : IUserService
     {
-        public async Task<Result> RegisterStudentAsync(UserRequestDto request, string pathPrefix)
+        public async Task<Result> RegisterStudentAsync(UserRequestDto request)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
@@ -53,14 +53,14 @@ namespace Application.Services
                 EmailVerificationTokenExpires = DateTime.UtcNow.AddMinutes(emailVerificationTokenExpiration)
             }, [Role.STUDENT]);
 
-            await emailService.SendEmailVerificationLinkAsync(request.Email, pathPrefix, emailVerificationToken);
+            await emailService.SendEmailVerificationLinkAsync(request.Email, httpHelper.GetHostPathPrefix(), emailVerificationToken);
 
             Result result = Result.Success(StatusCodes.Status201Created);
 
             return result;
         }
 
-        public async Task<Result> UpdateStudentAsync(string id, UserRequestDto request, string pathPrefix)
+        public async Task<Result> UpdateStudentAsync(string id, UserRequestDto request)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
@@ -105,7 +105,7 @@ namespace Application.Services
 
             if(emailChanged)
             {
-                await emailService.SendEmailVerificationLinkAsync(student.Email, pathPrefix, student.EmailVerificationToken!);
+                await emailService.SendEmailVerificationLinkAsync(student.Email, httpHelper.GetHostPathPrefix(), student.EmailVerificationToken!);
             }
 
             return Result.Success(StatusCodes.Status204NoContent);

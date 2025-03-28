@@ -9,7 +9,7 @@ using static Application.Services.AuthService;
 
 namespace Web.API.Controllers
 {
-    public class AuthController(IAuthService authService, ISecurityTokenProvider securityTokenProvider, ILogger<AuthController> logger) : BaseController
+    public class AuthController(IAuthService authService, ISecurityTokenProvider securityTokenProvider,ILogger<AuthController> logger) : BaseController
     {
         [HttpPost]
         [Route("login")]
@@ -26,7 +26,7 @@ namespace Web.API.Controllers
         [Route(VERIFY_EMAIL_ROUTE)]
         public async Task<IActionResult> VerifyEmailAsync(string verificationToken)
         {
-            Result result = await authService.VerifyEmailAsync(verificationToken, HttpHelpers.GetHostPathPrefix(HttpContext));
+            Result result = await authService.VerifyEmailAsync(verificationToken);
 
             return ApiResult(result);
         }
