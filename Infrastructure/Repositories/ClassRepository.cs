@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Relationships;
 using Domain.Repositories;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -76,6 +77,17 @@ namespace Infrastructure.Repositories
         public async Task DeleteClassAsync(Class clss)
         {
             dbContext.Classes.Remove(clss);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task<ClassEnrollment?> GetClassEnrollmentAsync(Guid classId, Guid studentId)
+        {
+            return await dbContext.ClassEnrollments.FirstOrDefaultAsync(cr => cr.ClassId == classId && cr.StudentId == studentId);
+        }
+
+        public async Task CreateClassEnrollmentAsync(ClassEnrollment classEnrollment)
+        {
+            dbContext.ClassEnrollments.Add(classEnrollment);
             await dbContext.SaveChangesAsync();
         }
     }

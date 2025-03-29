@@ -73,7 +73,7 @@ namespace Application.Services
             User? student = await userRepository.GetStudentByIdAsync(id);
             if (student is null)
             {
-                return Result.Failure(new StudentDoesNotExist());
+                return Result.Failure(new StudentDoesNotExistError());
             }
 
             bool emailChanged = student.Email != request.Email;
@@ -118,7 +118,7 @@ namespace Application.Services
             // Student does not exist.
             if (student is null)
             {
-                return Result<UserResponseDto>.Failure(new StudentDoesNotExist());
+                return Result<UserResponseDto>.Failure(new StudentDoesNotExistError());
             }
 
             return Result<UserResponseDto>.Success(StatusCodes.Status200OK, student.ToUserResponseDto());
@@ -137,7 +137,7 @@ namespace Application.Services
 
             if (student is null)
             {
-                return Result.Failure(new StudentDoesNotExist());
+                return Result.Failure(new StudentDoesNotExistError());
             }
 
             await userRepository.DeleteUserAsync(student);

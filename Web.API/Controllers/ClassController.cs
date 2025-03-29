@@ -54,5 +54,14 @@ namespace Web.API.Controllers
 
             return ApiResult(result);
         }
+
+        [HttpPost]
+        [Route("class/enroll")]
+        public async Task<IActionResult> EnrollStudentInClassAsync(ClassEnrollmentRequestDto request)
+        {
+            Result result = await classService.EnrollStudentInClassAsync(request);
+
+            return ApiResult(result);
+        }
     }
 }

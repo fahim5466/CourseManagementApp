@@ -1,9 +1,11 @@
 ﻿using Application.DTOs;
 using Application.DTOs.Class;
 using Domain.Entities;
+using Domain.Relationships;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using static Application.Errors.ClassErrors;
+using static Application.Errors.UserErrors;
 using static Application.Helpers.ResultHelper;
 using static Application.Helpers.ValidationHelper;
 
@@ -16,9 +18,10 @@ namespace Application.Services
         public Task<Result> CreateClassAsync(ClassRequestDto request);
         public Task<Result> UpdateClassAsync(string id, ClassRequestDto request);
         public Task<Result> DeleteClassAsync(string id);
+        public Task<Result> EnrollStudentInClassAsync(ClassEnrollmentRequestDto request);
     }
 
-    public class ClassService(IClassRepository classRepository, IUnitOfWork unitOfWork) : IClassService
+    public class ClassService(IClassRepository classRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : IClassService
     {
         public async Task<Result<ClassResponseDto>> GetClassByIdAsync(string id)
         {
@@ -103,6 +106,44 @@ namespace Application.Services
             await classRepository.DeleteClassAsync(clss);
 
             return Result.Success(StatusCodes.Status204NoContent);
+        }
+
+        public async Task<Result> EnrollStudentInClassAsync(ClassEnrollmentRequestDto request)
+        {
+            // Class should exist.
+            Class? clss = await classRepository.GetClassByIdAsync(request.ClassId);
+            if(clss is null)
+            {
+                return Result.Failure(new ClassDoesNotExistError());
+            }
+
+            // Student should exist.
+            User? student = await userRepository.GetStudentByIdAsync(request.StudentId);
+            if (student is null)
+            {
+                return Result.Failure(new StudentDoesNotExistError());
+            }
+
+            Guid classGuid = Guid.Empty;
+            Guid.TryParse(request.ClassId, out classGuid);
+
+            Guid studentGuid = Guid.Empty;
+            Guid.TryParse(request.StudentId, out studentGuid);
+
+            // Student should not be enrolled already.
+            ClassEnrollment? classEnrollment = await classRepository.GetClassEnrollmentAsync(classGuid, studentGuid);
+            if(classEnrollment is not null)
+            {
+                return Result.Failure(new StudentAlreadyEnrolledInClassError());
+            }
+
+            await classRepository.CreateClassEnrollmentAsync(new()
+            {
+                ClassId = classGuid,
+                StudentId = studentGuid
+            });
+
+            return Result.Success(StatusCodes.Status200OK);
         }
     }
 }

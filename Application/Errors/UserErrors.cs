@@ -28,9 +28,9 @@ namespace Application.Errors
             }
         }
 
-        public class StudentDoesNotExist : ProblemDetails
+        public class StudentDoesNotExistError : ProblemDetails
         {
-            public StudentDoesNotExist()
+            public StudentDoesNotExistError()
             {
                 Status = StatusCodes.Status404NotFound;
                 Type = $"{USER_ERROR_PATH}/student-does-not-exist";

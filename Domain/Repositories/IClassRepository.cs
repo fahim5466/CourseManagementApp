@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Relationships;
 
 namespace Domain.Repositories
 {
@@ -12,5 +13,7 @@ namespace Domain.Repositories
         public Task<bool> AreClassIdsValidAsync(List<string> ids);
         public Task CreateClassAsync(Class clss);
         public Task DeleteClassAsync(Class clss);
+        public Task<ClassEnrollment?> GetClassEnrollmentAsync(Guid classId, Guid studentId);
+        public Task CreateClassEnrollmentAsync(ClassEnrollment classEnrollment);
     }
 }

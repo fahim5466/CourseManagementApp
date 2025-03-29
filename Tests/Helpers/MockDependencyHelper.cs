@@ -9,6 +9,8 @@ namespace Tests.Helpers
 {
     public static class MockDependencyHelper
     {
+        public const string TestCurrentUserId = "632F9A04-BC5A-482F-933A-78F5680E2370";
+
         public static IConfiguration GetMockConfiguration()
         {
             Mock<IConfiguration> mockConfiguration = new Mock<IConfiguration>();
@@ -27,7 +29,7 @@ namespace Tests.Helpers
         {
             DbContextOptions<ApplicationDbContext> dummyOptions = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
 
-            DbContextMock<ApplicationDbContext> mockDbContext = new DbContextMock<ApplicationDbContext>(dummyOptions);
+            DbContextMock<ApplicationDbContext> mockDbContext = new DbContextMock<ApplicationDbContext>(dummyOptions, GetMockHttpHelper());
 
             return mockDbContext;
         }
@@ -46,7 +48,7 @@ namespace Tests.Helpers
 
             mockHttpHelper.Setup(x => x.GetHostPathPrefix()).Returns(string.Empty);
 
-            mockHttpHelper.Setup(x => x.GetCurrentUserId()).Returns(Guid.Empty);
+            mockHttpHelper.Setup(x => x.GetCurrentUserId()).Returns(Guid.Parse(TestCurrentUserId));
 
             return mockHttpHelper.Object;
         }

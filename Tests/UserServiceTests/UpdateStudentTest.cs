@@ -116,7 +116,7 @@ namespace Tests.UserServiceTests
 
             // Assert.
 
-            TestError<StudentDoesNotExist>(result);
+            TestError<StudentDoesNotExistError>(result);
         }
 
         [Fact]
@@ -144,7 +144,7 @@ namespace Tests.UserServiceTests
 
             // Assert.
 
-            TestError<StudentDoesNotExist>(result);
+            TestError<StudentDoesNotExistError>(result);
         }
 
         [Fact]

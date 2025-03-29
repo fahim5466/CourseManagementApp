@@ -10,8 +10,9 @@ namespace Tests.ClassServiceTests
         public static ClassService GetClassService(ApplicationDbContext dbContext)
         {
             IClassRepository classRepository = new ClassRepository(dbContext);
+            IUserRepository userRepository = new UserRepository(dbContext);
 
-            return new(classRepository, dbContext);
+            return new(classRepository, userRepository, dbContext);
         }
     }
 }
