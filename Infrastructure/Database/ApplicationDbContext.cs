@@ -17,6 +17,7 @@ namespace Infrastructure.Database
         public virtual DbSet<Course> Courses { get; set; }
         public virtual DbSet<CourseClass> CourseClasses { get; set; }
         public virtual DbSet<ClassEnrollment> ClassEnrollments { get; set; }
+        public virtual DbSet<CourseEnrollment> CourseEnrollments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
