@@ -1,10 +1,13 @@
 ﻿using Application.DTOs;
+using Application.DTOs.Class;
 using Application.DTOs.Course;
 using Domain.Entities;
+using Domain.Relationships;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using static Application.Errors.ClassErrors;
 using static Application.Errors.CourseErrors;
+using static Application.Errors.UserErrors;
 using static Application.Helpers.ResultHelper;
 using static Application.Helpers.ValidationHelper;
 
@@ -17,9 +20,10 @@ namespace Application.Services
         public Task<Result> CreateCourseAsync(CourseRequestDto request);
         public Task<Result> UpdateCourseAsync(string id, CourseRequestDto request);
         public Task<Result> DeleteCourseAsync(string id);
+        public Task<Result> EnrollStudentInCourseAsync(CourseEnrollmentRequestDto request);
     }
 
-    public class CourseService(ICourseRepository courseRepository, IClassRepository classRepository, IUnitOfWork unitOfWork) : ICourseService
+    public class CourseService(ICourseRepository courseRepository, IClassRepository classRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : ICourseService
     {
 
         public async Task<Result<CourseResponseDto>> GetCourseByIdAsync(string id)
@@ -124,6 +128,44 @@ namespace Application.Services
             await courseRepository.DeleteCourseAsync(course);
 
             return Result.Success(StatusCodes.Status204NoContent);
+        }
+
+        public async Task<Result> EnrollStudentInCourseAsync(CourseEnrollmentRequestDto request)
+        {
+            // Course should exist.
+            Course? course = await courseRepository.GetCourseByIdAsync(request.CourseId);
+            if (course is null)
+            {
+                return Result.Failure(new CourseDoesNotExistError());
+            }
+
+            // Student should exist.
+            User? student = await userRepository.GetStudentByIdAsync(request.StudentId);
+            if (student is null)
+            {
+                return Result.Failure(new StudentDoesNotExistError());
+            }
+
+            Guid courseGuid = Guid.Empty;
+            Guid.TryParse(request.CourseId, out courseGuid);
+
+            Guid studentGuid = Guid.Empty;
+            Guid.TryParse(request.StudentId, out studentGuid);
+
+            // Student should not be enrolled already.
+            CourseEnrollment? courseEnrollment = await courseRepository.GetCourseEnrollmentAsync(courseGuid, studentGuid);
+            if (courseEnrollment is not null)
+            {
+                return Result.Failure(new StudentAlreadyEnrolledInCourseError());
+            }
+
+            await courseRepository.CreateCourseEnrollmentAsync(new()
+            {
+                CourseId = courseGuid,
+                StudentId = studentGuid
+            });
+
+            return Result.Success(StatusCodes.Status200OK);
         }
     }
 }

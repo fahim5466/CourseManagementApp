@@ -47,5 +47,15 @@ namespace Application.Errors
                 Title = "Course does not exist";
             }
         }
+
+        public class StudentAlreadyEnrolledInCourseError : ProblemDetails
+        {
+            public StudentAlreadyEnrolledInCourseError()
+            {
+                Status = StatusCodes.Status409Conflict;
+                Type = $"{COURSE_ERROR_PATH}/student-already-enrolled-in-course-error";
+                Title = "Student is already enrolled in course";
+            }
+        }
     }
 }

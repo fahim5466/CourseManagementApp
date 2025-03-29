@@ -1,9 +1,10 @@
-﻿using Application.DTOs.Class;
+﻿using Application.DTOs;
+using Application.DTOs.Class;
+using Application.DTOs.Course;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
 using Domain.Relationships;
-using Domain.Repositories;
 using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
@@ -11,25 +12,26 @@ using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 using Tests.Helpers;
 using static Application.Errors.ClassErrors;
+using static Application.Errors.CourseErrors;
 using static Application.Errors.UserErrors;
 using static Application.Helpers.ResultHelper;
-using static Tests.ClassServiceTests.ClassServiceTestHelper;
+using static Tests.CourseServiceTests.CourseServiceTestHelper;
 using static Tests.Helpers.TestHelper;
 
-namespace Tests.ClassServiceTests
+namespace Tests.CourseServiceTests
 {
-    public class EnrollInClassTest
+    public class EnrollInCourseTest
     {
         [Theory]
         [InlineData("1", "885A60D5-A62E-46C4-95D6-E4684B84EF6B", 1)]
         [InlineData("885A60D5-A62E-46C4-95D6-E4684B84EF6B", "885A60D5-A62E-46C4-95D6-E4684B84EF6B", 2)]
         [InlineData("A27F997A-AC4B-4F2B-AB1E-72DE073DAA52", "1", 3)]
         [InlineData("A27F997A-AC4B-4F2B-AB1E-72DE073DAA52", "A27F997A-AC4B-4F2B-AB1E-72DE073DAA52", 4)]
-        public async Task EnrollStudentInClass_InvalidIds_ReturnsError(string classId, string studentId, int caseNo)
+        public async Task EnrollStudentInCourse_InvalidIds_ReturnsError(string courseId, string studentId, int caseNo)
         {
             // Arrange.
 
-            Class clss = ClassFixture().With(x => x.Id, Guid.Parse("A27F997A-AC4B-4F2B-AB1E-72DE073DAA52")).Create();
+            Course course = CourseFixture().With(x => x.Id, Guid.Parse("A27F997A-AC4B-4F2B-AB1E-72DE073DAA52")).Create();
             User student = UserFixture().With(x => x.Id, Guid.Parse("885A60D5-A62E-46C4-95D6-E4684B84EF6B")).Create();
             Role studentRole = RoleFixture().With(x => x.Id, Guid.NewGuid())
                                             .With(x => x.Name, Role.STUDENT)
@@ -37,26 +39,26 @@ namespace Tests.ClassServiceTests
             UserRole userRole = new() { UserId = student.Id, RoleId = studentRole.Id };
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
             mockDbContext.CreateDbSetMock(x => x.Users, [student]);
             mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
             mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
-            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, []);
 
             ApplicationDbContext dbContext = mockDbContext.Object;
-            ClassService classService = GetClassService(dbContext);
+            CourseService courseService = GetCourseService(dbContext);
 
-            ClassEnrollmentRequestDto request = new() { ClassId = classId, StudentId = studentId };
+            CourseEnrollmentRequestDto request = new() { CourseId = courseId, StudentId = studentId };
 
             // Act.
 
-            Result result = await classService.EnrollStudentInClassAsync(request);
+            Result result = await courseService.EnrollStudentInCourseAsync(request);
 
             // Assert.
 
-            if(caseNo == 1 || caseNo == 2)
+            if (caseNo == 1 || caseNo == 2)
             {
-                TestError<ClassDoesNotExistError>(result);
+                TestError<CourseDoesNotExistError>(result);
             }
             else
             {
@@ -65,78 +67,78 @@ namespace Tests.ClassServiceTests
         }
 
         [Fact]
-        public async Task EnrollStudentInClass_AlreadyEnrolled_ReturnsError()
+        public async Task EnrollStudentInCourse_AlreadyEnrolled_ReturnsError()
         {
             // Arrange.
 
-            Class clss = ClassFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            Course course = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
             User student = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
             Role studentRole = RoleFixture().With(x => x.Id, Guid.NewGuid())
                                             .With(x => x.Name, Role.STUDENT)
                                             .Create();
             UserRole userRole = new() { UserId = student.Id, RoleId = studentRole.Id };
-            ClassEnrollment classEnrollment = new() { ClassId = clss.Id, StudentId = student.Id };
+            CourseEnrollment courseEnrollment = new() { CourseId = course.Id, StudentId = student.Id };
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
             mockDbContext.CreateDbSetMock(x => x.Users, [student]);
             mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
             mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
-            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, [classEnrollment]);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, [courseEnrollment]);
 
             ApplicationDbContext dbContext = mockDbContext.Object;
-            ClassService classService = GetClassService(dbContext);
+            CourseService courseService = GetCourseService(dbContext);
 
-            ClassEnrollmentRequestDto request = new() { ClassId = clss.Id.ToString(), StudentId = student.Id.ToString() };
+            CourseEnrollmentRequestDto request = new() { CourseId = course.Id.ToString(), StudentId = student.Id.ToString() };
 
             // Act.
 
-            Result result = await classService.EnrollStudentInClassAsync(request);
+            Result result = await courseService.EnrollStudentInCourseAsync(request);
 
             // Assert.
 
-            TestError<StudentAlreadyEnrolledInClassError>(result);
+            TestError<StudentAlreadyEnrolledInCourseError>(result);
 
         }
 
         [Fact]
-        public async Task EnrollStudentInClass_ValidRequest_CreatesEnrollment()
+        public async Task EnrollStudentInCourse_ValidRequest_CreatesEnrollment()
         {
             // Arrange.
 
-            Class clss = ClassFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            Course course = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
             User student = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
             Role studentRole = RoleFixture().With(x => x.Id, Guid.NewGuid())
                                             .With(x => x.Name, Role.STUDENT)
                                             .Create();
-            UserRole userRole = new() { UserId = student.Id, RoleId = studentRole.Id};
+            UserRole userRole = new() { UserId = student.Id, RoleId = studentRole.Id };
 
             DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
             mockDbContext.CreateDbSetMock(x => x.Users, [student]);
             mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
             mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
-            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, []);
 
             ApplicationDbContext dbContext = mockDbContext.Object;
-            ClassRepository classRepository = new(dbContext);
-            ClassService classService = GetClassService(dbContext);
+            CourseRepository courseRepository = new(dbContext);
+            CourseService courseService = GetCourseService(dbContext);
 
-            ClassEnrollmentRequestDto request = new() { ClassId = clss.Id.ToString(), StudentId = student.Id.ToString() };
+            CourseEnrollmentRequestDto request = new() { CourseId = course.Id.ToString(), StudentId = student.Id.ToString() };
 
             // Act.
 
-            Result result = await classService.EnrollStudentInClassAsync(request);
+            Result result = await courseService.EnrollStudentInCourseAsync(request);
 
             // Assert.
 
             TestSuccess(result);
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-            ClassEnrollment? classEnrollment = await classRepository.GetClassEnrollmentAsync(clss.Id, student.Id);
-            classEnrollment.Should().NotBeNull();
-            classEnrollment.ClassId.Should().Be(clss.Id);
-            classEnrollment.StudentId.Should().Be(student.Id);
+            CourseEnrollment? courseEnrollment = await courseRepository.GetCourseEnrollmentAsync(course.Id, student.Id);
+            courseEnrollment.Should().NotBeNull();
+            courseEnrollment.CourseId.Should().Be(course.Id);
+            courseEnrollment.StudentId.Should().Be(student.Id);
         }
     }
 }

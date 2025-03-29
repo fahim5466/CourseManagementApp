@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Relationships;
 using Domain.Repositories;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,16 @@ namespace Infrastructure.Repositories
 {
     public class CourseRepository(ApplicationDbContext dbContext) : ICourseRepository
     {
+        public async Task<Course?> GetCourseByIdAsync(string id)
+        {
+            if (!Guid.TryParse(id, out Guid guid))
+            {
+                return null;
+            }
+
+            return await dbContext.Courses.FirstOrDefaultAsync(c => c.Id == guid);
+        }
+
         public async Task<Course?> GetCourseByIdWithClassesAsync(string id)
         {
             if(!Guid.TryParse(id, out Guid guid))
@@ -46,6 +57,17 @@ namespace Infrastructure.Repositories
         public async Task DeleteCourseAsync(Course course)
         {
             dbContext.Courses.Remove(course);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task<CourseEnrollment?> GetCourseEnrollmentAsync(Guid courseId, Guid studentId)
+        {
+            return await dbContext.CourseEnrollments.FirstOrDefaultAsync(cr => cr.CourseId == courseId && cr.StudentId == studentId);
+        }
+
+        public async Task CreateCourseEnrollmentAsync(CourseEnrollment courseEnrollment)
+        {
+            dbContext.CourseEnrollments.Add(courseEnrollment);
             await dbContext.SaveChangesAsync();
         }
     }

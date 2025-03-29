@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Course;
+using Application.DTOs.Course;
 using Application.Services;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -51,6 +52,15 @@ namespace Web.API.Controllers
         public async Task<IActionResult> DeleteCourseAsync(string id)
         {
             Result result = await courseService.DeleteCourseAsync(id);
+
+            return ApiResult(result);
+        }
+
+        [HttpPost]
+        [Route("course/enroll")]
+        public async Task<IActionResult> EnrollStudentInCourseAsync(CourseEnrollmentRequestDto request)
+        {
+            Result result = await courseService.EnrollStudentInCourseAsync(request);
 
             return ApiResult(result);
         }
