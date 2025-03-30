@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.Class;
 using Application.DTOs.Course;
 using Application.DTOs.Course;
+using Application.DTOs.User;
 using Application.Services;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -71,6 +72,15 @@ namespace Web.API.Controllers
         public async Task<IActionResult> GetClassesOfCourseAsync(string id)
         {
             Result<List<ClassResponseDto>> result = await courseService.GetClassesOfCourseAsync(id);
+
+            return ApiResult(result);
+        }
+
+        [HttpGet]
+        [Route("course/{id}/students")]
+        public async Task<IActionResult> GetStudentsOfCourseAsync(string id)
+        {
+            Result<List<UserResponseDto>> result = await courseService.GetStudentsOfCourseAsync(id);
 
             return ApiResult(result);
         }

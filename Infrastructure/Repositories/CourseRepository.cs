@@ -48,6 +48,17 @@ namespace Infrastructure.Repositories
             return await dbContext.Courses.Include(c => c.Classes).ToListAsync();
         }
 
+        public async Task<List<User>> GetStudentsOfCourseAsync(string id)
+        {
+            IQueryable<User> query = from courseEnrollment in dbContext.CourseEnrollments
+                                     join student in dbContext.Users
+                                     on courseEnrollment.StudentId equals student.Id
+                                     where courseEnrollment.CourseId.ToString() == id
+                                     select student;
+            
+            return await query.ToListAsync();
+        }
+
         public async Task CreateCourseAsync(Course course)
         {
             dbContext.Courses.Add(course);
