@@ -21,6 +21,7 @@ namespace Application.Services
         public Task<Result> UpdateCourseAsync(string id, CourseRequestDto request);
         public Task<Result> DeleteCourseAsync(string id);
         public Task<Result> EnrollStudentInCourseAsync(CourseEnrollmentRequestDto request);
+        public Task<Result<List<ClassResponseDto>>> GetClassesOfCourseAsync(string courseId);
     }
 
     public class CourseService(ICourseRepository courseRepository, IClassRepository classRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : ICourseService
@@ -166,6 +167,19 @@ namespace Application.Services
             });
 
             return Result.Success(StatusCodes.Status200OK);
+        }
+
+        public async Task<Result<List<ClassResponseDto>>> GetClassesOfCourseAsync(string courseId)
+        {
+            Course? course = await courseRepository.GetCourseByIdWithClassesAsync(courseId);
+
+            // Course should exist.
+            if (course is null)
+            {
+                return Result<List<ClassResponseDto>>.Failure(new CourseDoesNotExistError());
+            }
+
+            return Result<List<ClassResponseDto>>.Success(StatusCodes.Status200OK, course.Classes.Select(c => c.ToClassResponseDto()).ToList());
         }
     }
 }

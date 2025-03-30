@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.DTOs.Class;
 using Application.DTOs.Course;
 using Application.Services;
 using AutoFixture;
@@ -20,7 +21,7 @@ namespace Tests.CourseServiceTests
         [Theory]
         [InlineData("1")]
         [InlineData("7E89EECB-7A95-48D6-A63B-FE6A4D7588F8")]
-        public async Task GetCourseById_InvalidId_ReturnsErrorAsync(string id)
+        public async Task GetCourseById_InvalidId_ReturnsError(string id)
         {
             // Arrange.
 
@@ -108,6 +109,71 @@ namespace Tests.CourseServiceTests
             CourseResponseDto? courseResponse2 = courseResponses.FirstOrDefault(x => x.Id == course2.Id.ToString());
             courseResponse2.Should().NotBeNull();
             courseResponse2.Should().BeEquivalentTo(course2.ToCourseResponseDto());
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("7E89EECB-7A95-48D6-A63B-FE6A4D7588F8")]
+        public async Task GetClassesOfCourse_InvalidId_ReturnsError(string id)
+        {
+            // Arrange.
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            CourseService courseService = GetCourseService(dbContext);
+
+            // Act.
+
+            Result<List<ClassResponseDto>> result = await courseService.GetClassesOfCourseAsync(id);
+
+            // Assert.
+
+            TestError<CourseDoesNotExistError>(result);
+        }
+
+        [Fact]
+        public async Task GetClassesOfCourse_ReturnsCourseWithClasses()
+        {
+            // Arrange.
+
+            Class clss1 = ClassFixture().Create();
+            Class clss2 = ClassFixture().Create();
+            Class clss3 = ClassFixture().Create();
+
+            Course course1 = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            course1.Classes = [clss1, clss2];
+
+            Course course2 = CourseFixture().With(x => x.Id, Guid.NewGuid()).Create();
+            course2.Classes = [clss1, clss3];
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course1, course2]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss1, clss2, clss3]);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            CourseService courseService = GetCourseService(dbContext);
+
+            // Act.
+
+            Result<List<ClassResponseDto>> result = await courseService.GetClassesOfCourseAsync(course1.Id.ToString());
+
+            // Assert.
+
+            TestSuccess(result);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            List<ClassResponseDto> responses = result.Value!;
+            responses.Should().HaveCount(2);
+
+            ClassResponseDto? classResponse1 = responses.FirstOrDefault(x => x.Id == clss1.Id.ToString());
+            classResponse1.Should().NotBeNull();
+            classResponse1.Should().BeEquivalentTo(clss1.ToClassResponseDto());
+
+            ClassResponseDto? classResponse2 = responses.FirstOrDefault(x => x.Id == clss2.Id.ToString());
+            classResponse2.Should().NotBeNull();
+            classResponse2.Should().BeEquivalentTo(clss2.ToClassResponseDto());
         }
     }
 }

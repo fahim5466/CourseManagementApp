@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Course;
+﻿using Application.DTOs.Class;
+using Application.DTOs.Course;
 using Application.DTOs.Course;
 using Application.Services;
 using Domain.Entities;
@@ -61,6 +62,15 @@ namespace Web.API.Controllers
         public async Task<IActionResult> EnrollStudentInCourseAsync(CourseEnrollmentRequestDto request)
         {
             Result result = await courseService.EnrollStudentInCourseAsync(request);
+
+            return ApiResult(result);
+        }
+
+        [HttpGet]
+        [Route("course/{id}/classes")]
+        public async Task<IActionResult> GetClassesOfCourseAsync(string id)
+        {
+            Result<List<ClassResponseDto>> result = await courseService.GetClassesOfCourseAsync(id);
 
             return ApiResult(result);
         }
