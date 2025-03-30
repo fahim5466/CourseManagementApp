@@ -15,8 +15,8 @@ namespace Application.Services
 {
     public interface ICourseService
     {
-        public Task<Result<CourseResponseDto>> GetCourseByIdAsync(string id);
-        public Task<Result<List<CourseResponseDto>>> GetAllCoursesAsync();
+        public Task<Result<CourseResponseDtoWithClasses>> GetCourseByIdAsync(string id);
+        public Task<Result<List<CourseResponseDtoWithClasses>>> GetAllCoursesAsync();
         public Task<Result> CreateCourseAsync(CourseRequestDto request);
         public Task<Result> UpdateCourseAsync(string id, CourseRequestDto request);
         public Task<Result> DeleteCourseAsync(string id);
@@ -27,25 +27,25 @@ namespace Application.Services
     public class CourseService(ICourseRepository courseRepository, IClassRepository classRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : ICourseService
     {
 
-        public async Task<Result<CourseResponseDto>> GetCourseByIdAsync(string id)
+        public async Task<Result<CourseResponseDtoWithClasses>> GetCourseByIdAsync(string id)
         {
             Course? course = await courseRepository.GetCourseByIdWithClassesAsync(id);
 
             // Course does not exist.
             if(course is null)
             {
-                return Result<CourseResponseDto>.Failure(new CourseDoesNotExistError());
+                return Result<CourseResponseDtoWithClasses>.Failure(new CourseDoesNotExistError());
             }
 
-            return Result<CourseResponseDto>.Success(StatusCodes.Status200OK, course.ToCourseResponseDto());
+            return Result<CourseResponseDtoWithClasses>.Success(StatusCodes.Status200OK, course.ToCourseResponseDtoWithClasses());
         }
 
-        public async Task<Result<List<CourseResponseDto>>> GetAllCoursesAsync()
+        public async Task<Result<List<CourseResponseDtoWithClasses>>> GetAllCoursesAsync()
         {
             List<Course> courses = await courseRepository.GetAllCoursesAsync();
 
-            return Result<List<CourseResponseDto>>.Success(StatusCodes.Status200OK,
-                    courses.Select(course => course.ToCourseResponseDto()).ToList());
+            return Result<List<CourseResponseDtoWithClasses>>.Success(StatusCodes.Status200OK,
+                    courses.Select(course => course.ToCourseResponseDtoWithClasses()).ToList());
         }
 
         public async Task<Result> CreateCourseAsync(CourseRequestDto request)

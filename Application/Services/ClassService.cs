@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.DTOs.Class;
+using Application.DTOs.Course;
 using Domain.Entities;
 using Domain.Relationships;
 using Domain.Repositories;
@@ -19,6 +20,7 @@ namespace Application.Services
         public Task<Result> UpdateClassAsync(string id, ClassRequestDto request);
         public Task<Result> DeleteClassAsync(string id);
         public Task<Result> EnrollStudentInClassAsync(ClassEnrollmentRequestDto request);
+        public Task<Result<List<CourseResponseDto>>> GetCoursesOfClassAsync(string id);
     }
 
     public class ClassService(IClassRepository classRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : IClassService
@@ -144,6 +146,19 @@ namespace Application.Services
             });
 
             return Result.Success(StatusCodes.Status200OK);
+        }
+
+        public async Task<Result<List<CourseResponseDto>>> GetCoursesOfClassAsync(string id)
+        {
+            Class? clss = await classRepository.GetClassByIdWithCoursesAsync(id);
+
+            // Class should exist.
+            if(clss is null)
+            {
+                return Result<List<CourseResponseDto>>.Failure(new ClassDoesNotExistError());
+            }
+
+            return Result<List<CourseResponseDto>>.Success(StatusCodes.Status200OK, clss.Courses.Select(c => c.ToCourseResponseDto()).ToList());
         }
     }
 }

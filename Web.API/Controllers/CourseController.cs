@@ -25,7 +25,7 @@ namespace Web.API.Controllers
         [Route("course")]
         public async Task<IActionResult> GetCourseByIdAsync(string id)
         {
-            Result<CourseResponseDto> result = await courseService.GetCourseByIdAsync(id);
+            Result<CourseResponseDtoWithClasses> result = await courseService.GetCourseByIdAsync(id);
 
             return ApiResult(result);
         }
@@ -34,7 +34,7 @@ namespace Web.API.Controllers
         [Route("courses")]
         public async Task<IActionResult> GetAllCoursesAsync()
         {
-            Result<List<CourseResponseDto>> result = await courseService.GetAllCoursesAsync();
+            Result<List<CourseResponseDtoWithClasses>> result = await courseService.GetAllCoursesAsync();
 
             return ApiResult(result);
         }

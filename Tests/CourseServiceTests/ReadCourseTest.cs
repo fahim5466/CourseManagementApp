@@ -33,7 +33,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result<CourseResponseDto> result = await courseService.GetCourseByIdAsync(id);
+            Result<CourseResponseDtoWithClasses> result = await courseService.GetCourseByIdAsync(id);
 
             // Assert.
 
@@ -58,15 +58,15 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result<CourseResponseDto> result = await courseService.GetCourseByIdAsync(course.Id.ToString());
+            Result<CourseResponseDtoWithClasses> result = await courseService.GetCourseByIdAsync(course.Id.ToString());
 
             // Assert.
 
             TestSuccess(result);
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-            CourseResponseDto courseResponseDto = result.Value!;
-            courseResponseDto.Should().BeEquivalentTo(course.ToCourseResponseDto());
+            CourseResponseDtoWithClasses courseResponseDto = result.Value!;
+            courseResponseDto.Should().BeEquivalentTo(course.ToCourseResponseDtoWithClasses());
         }
 
         [Fact]
@@ -92,23 +92,23 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result<List<CourseResponseDto>> result = await courseService.GetAllCoursesAsync();
+            Result<List<CourseResponseDtoWithClasses>> result = await courseService.GetAllCoursesAsync();
 
             // Assert.
 
             TestSuccess(result);
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-            List<CourseResponseDto> courseResponses = result.Value!;
+            List<CourseResponseDtoWithClasses> courseResponses = result.Value!;
             courseResponses.Should().HaveCount(2);
 
-            CourseResponseDto? courseResponse1 = courseResponses.FirstOrDefault(x => x.Id == course1.Id.ToString());
+            CourseResponseDtoWithClasses? courseResponse1 = courseResponses.FirstOrDefault(x => x.Id == course1.Id.ToString());
             courseResponse1.Should().NotBeNull();
-            courseResponse1.Should().BeEquivalentTo(course1.ToCourseResponseDto());
+            courseResponse1.Should().BeEquivalentTo(course1.ToCourseResponseDtoWithClasses());
 
-            CourseResponseDto? courseResponse2 = courseResponses.FirstOrDefault(x => x.Id == course2.Id.ToString());
+            CourseResponseDtoWithClasses? courseResponse2 = courseResponses.FirstOrDefault(x => x.Id == course2.Id.ToString());
             courseResponse2.Should().NotBeNull();
-            courseResponse2.Should().BeEquivalentTo(course2.ToCourseResponseDto());
+            courseResponse2.Should().BeEquivalentTo(course2.ToCourseResponseDtoWithClasses());
         }
 
         [Theory]

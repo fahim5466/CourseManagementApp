@@ -22,6 +22,15 @@ namespace Application.DTOs
             return new()
             {
                 Id = course.Id.ToString(),
+                Name = course.Name
+            };
+        }
+
+        public static CourseResponseDtoWithClasses ToCourseResponseDtoWithClasses(this Domain.Entities.Course course)
+        {
+            return new()
+            {
+                Id = course.Id.ToString(),
                 Name = course.Name,
                 ClassNames = course.Classes.Select(c => c.Name).ToList()
             };

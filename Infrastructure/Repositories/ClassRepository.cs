@@ -31,6 +31,18 @@ namespace Infrastructure.Repositories
             return await dbContext.Classes.FirstOrDefaultAsync(c => c.Id == guid);
         }
 
+        public async Task<Class?> GetClassByIdWithCoursesAsync(string id)
+        {
+            if (!Guid.TryParse(id, out Guid guid))
+            {
+                return null;
+            }
+
+            return await dbContext.Classes
+                                  .Include(x => x.Courses)
+                                  .FirstOrDefaultAsync(c => c.Id == guid);
+        }
+
         public async Task<List<Class>> GetClassesByIdAsync(List<string> ids)
         {
             List<Class> classes = [];

@@ -15,5 +15,6 @@ namespace Domain.Repositories
         public Task DeleteClassAsync(Class clss);
         public Task<ClassEnrollment?> GetClassEnrollmentAsync(Guid classId, Guid studentId);
         public Task CreateClassEnrollmentAsync(ClassEnrollment classEnrollment);
+        public Task<Class?> GetClassByIdWithCoursesAsync(string id);
     }
 }
