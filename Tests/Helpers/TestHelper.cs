@@ -40,6 +40,7 @@ namespace Tests.Helpers
         {
             Fixture fixture = new Fixture();
             return fixture.Build<User>()
+                          .With(x => x.Id, Guid.NewGuid())
                           .With(x => x.Roles, []);
         }
 
@@ -47,6 +48,7 @@ namespace Tests.Helpers
         {
             Fixture fixture = new Fixture();
             return fixture.Build<Role>()
+                          .With(x => x.Id, Guid.NewGuid())
                           .With(x => x.Users, []);
         }
 
@@ -54,6 +56,7 @@ namespace Tests.Helpers
         {
             Fixture fixture = new Fixture();
             return fixture.Build<Class>()
+                          .With(x => x.Id, Guid.NewGuid())
                           .With(x => x.Courses, []);
         }
 
@@ -62,6 +65,7 @@ namespace Tests.Helpers
         {
             Fixture fixture = new Fixture();
             return fixture.Build<Course>()
+                          .With(x => x.Id, Guid.NewGuid())
                           .With(x => x.Classes, []);
         }
     }
