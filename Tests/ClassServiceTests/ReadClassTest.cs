@@ -12,6 +12,7 @@ using Infrastructure.Database;
 using Microsoft.AspNetCore.Http;
 using Tests.Helpers;
 using static Application.Errors.ClassErrors;
+using static Application.Errors.UserErrors;
 using static Application.Helpers.ResultHelper;
 using static Tests.ClassServiceTests.ClassServiceTestHelper;
 using static Tests.Helpers.TestHelper;
@@ -247,6 +248,96 @@ namespace Tests.ClassServiceTests
             UserResponseDto? studentResponse3 = responses.FirstOrDefault(x => x.Id == student3.Id.ToString());
             studentResponse3.Should().NotBeNull();
             studentResponse3.Should().BeEquivalentTo(student3.ToUserResponseDto());
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("7E89EECB-7A95-48D6-A63B-FE6A4D7588F8")]
+        public async Task GetClassesOfStudent_InvalidId_ReturnsError(string id)
+        {
+            // Arrange.
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, []);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, []);
+            mockDbContext.CreateDbSetMock(x => x.Roles, []);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            ClassService classService = GetClassService(dbContext);
+
+            // Act.
+
+            Result<List<ClassResponseDto>> result = await classService.GetClassesOfStudentAsync(id);
+
+            // Assert.
+
+            TestError<StudentDoesNotExistError>(result);
+        }
+
+        [Fact]
+        public async Task GetClassesOfStudent_ReturnsClasses()
+        {
+            // Arrange.
+
+            User student = UserFixture().Create();
+            Role studentRole = RoleFixture().With(x => x.Name, Role.STUDENT).Create();
+            UserRole userRole = new() { RoleId = studentRole.Id, UserId = student.Id };
+
+            Class clss1 = ClassFixture().Create();
+            Class clss2 = ClassFixture().Create();
+            Class clss3 = ClassFixture().Create();
+            Class clss4 = ClassFixture().Create();
+
+            Course course1 = CourseFixture().Create();
+            Course course2 = CourseFixture().Create();
+
+            CourseClass courseClass1 = new() { CourseId = course1.Id, ClassId = clss2.Id };
+            CourseClass courseClass2 = new() { CourseId = course1.Id, ClassId = clss3.Id };
+
+            CourseClass courseClass3 = new() { CourseId = course2.Id, ClassId = clss3.Id };
+            CourseClass courseClass4 = new() { CourseId = course2.Id, ClassId = clss4.Id };
+
+            ClassEnrollment classEnrollment1 = new() { ClassId = clss1.Id, StudentId = student.Id };
+            ClassEnrollment classEnrollment2 = new() { ClassId = clss2.Id, StudentId = student.Id };
+
+            CourseEnrollment courseEnrollment = new() { CourseId = course1.Id, StudentId = student.Id };
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss1, clss2, clss3, clss4]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course1, course2]);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, [courseClass1, courseClass2, courseClass3, courseClass4]);
+            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, [classEnrollment1, classEnrollment2]);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, [courseEnrollment]);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            ClassService classService = GetClassService(dbContext);
+
+            // Act.
+
+            Result<List<ClassResponseDto>> result = await classService.GetClassesOfStudentAsync(student.Id.ToString());
+
+            // Assert.
+
+            TestSuccess(result);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            List<ClassResponseDto> responses = result.Value!;
+            responses.Should().HaveCount(3);
+
+            ClassResponseDto? classResponse1 = responses.FirstOrDefault(x => x.Id == clss1.Id.ToString());
+            classResponse1.Should().NotBeNull();
+            classResponse1.Should().BeEquivalentTo(clss1.ToClassResponseDto());
+
+            ClassResponseDto? classResponse2 = responses.FirstOrDefault(x => x.Id == clss2.Id.ToString());
+            classResponse2.Should().NotBeNull();
+            classResponse2.Should().BeEquivalentTo(clss2.ToClassResponseDto());
+
+            ClassResponseDto? classResponse3 = responses.FirstOrDefault(x => x.Id == clss3.Id.ToString());
+            classResponse3.Should().NotBeNull();
+            classResponse3.Should().BeEquivalentTo(clss3.ToClassResponseDto());
         }
     }
 }

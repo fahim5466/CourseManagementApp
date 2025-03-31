@@ -86,6 +86,29 @@ namespace Infrastructure.Repositories
             return await unionQuery.ToListAsync();
         }
 
+        public async Task<List<Class>> GetClassesOfStudentAsync(string id)
+        {
+            // Get classes where the student is directly enrolled.
+            IQueryable<Class> query1 = from classEnrollment in dbContext.ClassEnrollments
+                                       join clss in dbContext.Classes
+                                       on classEnrollment.ClassId equals clss.Id
+                                       where classEnrollment.StudentId.ToString() == id
+                                       select clss;
+
+            // Get classes where the student is indirectly enrolled through a course.
+            IQueryable<Class> query2 = from courseEnrollment in dbContext.CourseEnrollments
+                                       join courseClass in dbContext.CourseClasses
+                                       on courseEnrollment.CourseId equals courseClass.CourseId
+                                       join clss in dbContext.Classes
+                                       on courseClass.ClassId equals clss.Id
+                                       where courseEnrollment.StudentId.ToString() == id
+                                       select clss;
+
+            IQueryable<Class> unionQuery = query1.Union(query2);
+
+            return await unionQuery.ToListAsync();
+        }
+
         public async Task<bool> AreClassIdsValidAsync(List<string> ids)
         {
             foreach (string id in ids)
