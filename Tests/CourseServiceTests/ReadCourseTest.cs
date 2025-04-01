@@ -12,6 +12,7 @@ using Infrastructure.Database;
 using Microsoft.AspNetCore.Http;
 using Tests.Helpers;
 using static Application.Errors.CourseErrors;
+using static Application.Errors.UserErrors;
 using static Application.Helpers.ResultHelper;
 using static Tests.CourseServiceTests.CourseServiceTestHelper;
 using static Tests.Helpers.TestHelper;
@@ -244,6 +245,77 @@ namespace Tests.CourseServiceTests
             UserResponseDto? studentResponse2 = responses.FirstOrDefault(x => x.Id == student2.Id.ToString());
             studentResponse2.Should().NotBeNull();
             studentResponse2.Should().BeEquivalentTo(student2.ToUserResponseDto());
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("7E89EECB-7A95-48D6-A63B-FE6A4D7588F8")]
+        public async Task GetCoursesOfStudent_InvalidId_ReturnsError(string id)
+        {
+            // Arrange.
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, []);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, []);
+            mockDbContext.CreateDbSetMock(x => x.Roles, []);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            CourseService courseService = GetCourseService(dbContext);
+
+            // Act.
+
+            Result<List<CourseResponseDto>> result = await courseService.GetCoursesOfStudentAsync(id);
+
+            // Assert.
+
+            TestError<StudentDoesNotExistError>(result);
+        }
+
+        [Fact]
+        public async Task GetCoursesOfStudent_ReturnsCourses()
+        {
+            // Arrange.
+
+            User student = UserFixture().Create();
+            Role studentRole = RoleFixture().With(x => x.Name, Role.STUDENT).Create();
+            UserRole userRole = new() { RoleId = studentRole.Id, UserId = student.Id };
+
+            Course course1 = CourseFixture().Create();
+            Course course2 = CourseFixture().Create();
+            Course course3 = CourseFixture().Create();
+
+            CourseEnrollment courseEnrollment1 = new() { CourseId = course1.Id, StudentId = student.Id };
+            CourseEnrollment courseEnrollment2 = new() { CourseId = course2.Id, StudentId = student.Id };
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course1, course2, course3]);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, [courseEnrollment1, courseEnrollment2]);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            CourseService courseService = GetCourseService(dbContext);
+
+            // Act.
+
+            Result<List<CourseResponseDto>> result = await courseService.GetCoursesOfStudentAsync(student.Id.ToString());
+
+            // Assert.
+
+            TestSuccess(result);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            List<CourseResponseDto> responses = result.Value!;
+            responses.Should().HaveCount(2);
+
+            CourseResponseDto? courseResponse1 = responses.FirstOrDefault(x => x.Id == course1.Id.ToString());
+            courseResponse1.Should().NotBeNull();
+            courseResponse1.Should().BeEquivalentTo(course1.ToCourseResponseDto());
+
+            CourseResponseDto? courseResponse2 = responses.FirstOrDefault(x => x.Id == course2.Id.ToString());
+            courseResponse2.Should().NotBeNull();
+            courseResponse2.Should().BeEquivalentTo(course2.ToCourseResponseDto());
         }
     }
 }

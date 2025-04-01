@@ -24,6 +24,7 @@ namespace Application.Services
         public Task<Result> EnrollStudentInCourseAsync(CourseEnrollmentRequestDto request);
         public Task<Result<List<ClassResponseDto>>> GetClassesOfCourseAsync(string courseId);
         public Task<Result<List<UserResponseDto>>> GetStudentsOfCourseAsync(string id);
+        public Task<Result<List<CourseResponseDto>>> GetCoursesOfStudentAsync(string id);
     }
 
     public class CourseService(ICourseRepository courseRepository, IClassRepository classRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : ICourseService
@@ -197,6 +198,20 @@ namespace Application.Services
             List<User> students = await courseRepository.GetStudentsOfCourseAsync(id);
 
             return Result<List<UserResponseDto>>.Success(StatusCodes.Status200OK, students.Select(s => s.ToUserResponseDto()).ToList());
+        }
+
+        public async Task<Result<List<CourseResponseDto>>> GetCoursesOfStudentAsync(string id)
+        {
+            // Student should exist.
+            User? student = await userRepository.GetStudentByIdAsync(id);
+            if(student is null)
+            {
+                return Result<List<CourseResponseDto>>.Failure(new StudentDoesNotExistError());
+            }
+
+            List<Course> courses = await courseRepository.GetCoursesOfStudentAsync(id);
+
+            return Result<List<CourseResponseDto>>.Success(StatusCodes.Status200OK, courses.Select(c => c.ToCourseResponseDto()).ToList());
         }
     }
 }

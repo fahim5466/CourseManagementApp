@@ -11,6 +11,7 @@ namespace Domain.Repositories
         public Task<Course?> GetCourseByNameAsync(string name, string idToExclude);
         public Task<List<Course>> GetAllCoursesAsync();
         public Task<List<User>> GetStudentsOfCourseAsync(string id);
+        public Task<List<Course>> GetCoursesOfStudentAsync(string id);
         public Task CreateCourseAsync(Course course);
         public Task DeleteCourseAsync(Course course);
         public Task<CourseEnrollment?> GetCourseEnrollmentAsync(Guid courseId, Guid studentId);
