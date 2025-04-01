@@ -23,6 +23,7 @@ namespace Application.Services
         public Task<Result> EnrollStudentInClassAsync(ClassEnrollmentRequestDto request);
         public Task<Result<List<CourseResponseDto>>> GetCoursesOfClassAsync(string id);
         public Task<Result<List<UserResponseDto>>> GetStudentsOfClassAsync(string id);
+        public Task<Result<List<string>>> GetOtherStudentNamesOfClassAsync(string studentId, string classId);
         public Task<Result<List<ClassResponseDto>>> GetClassesOfStudentAsync(string id);
     }
 
@@ -177,6 +178,37 @@ namespace Application.Services
             List<User> students = await classRepository.GetStudentsOfClassAsync(id);
 
             return Result<List<UserResponseDto>>.Success(StatusCodes.Status200OK, students.Select(s => s.ToUserResponseDto()).ToList());
+        }
+
+        public async Task<Result<List<string>>> GetOtherStudentNamesOfClassAsync(string studentId, string classId)
+        {
+            // Student should exist.
+            User? student = await userRepository.GetStudentByIdAsync(studentId);
+            if (student is null)
+            {
+                return Result<List<string>>.Failure(new StudentDoesNotExistError());
+            }
+
+            // Class should exist.
+            Class? clss = await classRepository.GetClassByIdAsync(classId);
+            
+            if (clss is null)
+            {
+                return Result<List<string>>.Failure(new ClassDoesNotExistError());
+            }
+
+            List<User> students = await classRepository.GetStudentsOfClassAsync(classId);
+                
+            // Student should be enrolled in the class.
+            if(!students.Any(s => s.Id.ToString() == studentId))
+            {
+                return Result<List<string>>.Failure(new StudentNotEnrolledInClassError());
+            }
+
+            return Result<List<string>>.Success(StatusCodes.Status200OK,
+                                                students.Where(s => s.Id.ToString() != studentId)
+                                                        .Select(s => s.Name)
+                                                        .ToList());
         }
 
         public async Task<Result<List<ClassResponseDto>>> GetClassesOfStudentAsync(string id)

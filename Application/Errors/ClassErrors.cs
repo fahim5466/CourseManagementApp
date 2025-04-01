@@ -47,5 +47,15 @@ namespace Application.Errors
                 Title = "Student is already enrolled in class";
             }
         }
+
+        public class StudentNotEnrolledInClassError : ProblemDetails
+        {
+            public StudentNotEnrolledInClassError()
+            {
+                Status = StatusCodes.Status403Forbidden;
+                Type = $"{CLASS_ERROR_PATH}/student-not-enrolled-in-class-error";
+                Title = "Student is not enrolled in class";
+            }
+        }
     }
 }

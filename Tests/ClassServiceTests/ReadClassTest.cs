@@ -339,5 +339,190 @@ namespace Tests.ClassServiceTests
             classResponse3.Should().NotBeNull();
             classResponse3.Should().BeEquivalentTo(clss3.ToClassResponseDto());
         }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("7E89EECB-7A95-48D6-A63B-FE6A4D7588F8")]
+        public async Task GetOtherStudentsOfClass_InvalidStudentId_ReturnsError(string studentId)
+        {
+            // Arrange.
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, []);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, []);
+            mockDbContext.CreateDbSetMock(x => x.Roles, []);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            ClassService classService = GetClassService(dbContext);
+
+            // Act.
+
+            Result<List<string>> result = await classService.GetOtherStudentNamesOfClassAsync(studentId, "test");
+
+            // Assert.
+
+            TestError<StudentDoesNotExistError>(result);
+        }
+
+        [Theory]
+        [InlineData("1")]
+        [InlineData("7E89EECB-7A95-48D6-A63B-FE6A4D7588F8")]
+        public async Task GetOtherStudentsOfClass_InvalidClassId_ReturnsError(string classId)
+        {
+            // Arrange.
+
+            User student = UserFixture().Create();
+            Role studentRole = RoleFixture().With(x => x.Name, Role.STUDENT).Create();
+            UserRole userRole = new() { RoleId = studentRole.Id, UserId = student.Id };
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, []);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            ClassService classService = GetClassService(dbContext);
+
+            // Act.
+
+            Result<List<string>> result = await classService.GetOtherStudentNamesOfClassAsync(student.Id.ToString(), classId);
+
+            // Assert.
+
+            TestError<ClassDoesNotExistError>(result);
+        }
+
+        [Fact]
+        public async Task GetOtherStudentsOfClass_StudentNotEnrolledInClass_ReturnsError()
+        {
+            // Arrange.
+
+            User student = UserFixture().Create();
+            Role studentRole = RoleFixture().With(x => x.Name, Role.STUDENT).Create();
+            UserRole userRole = new() { RoleId = studentRole.Id, UserId = student.Id };
+
+            Class clss = ClassFixture().Create();
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, []);
+            mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, []);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            ClassService classService = GetClassService(dbContext);
+
+            // Act.
+
+            Result<List<string>> result = await classService.GetOtherStudentNamesOfClassAsync(student.Id.ToString(), clss.Id.ToString());
+
+            // Assert.
+
+            TestError<StudentNotEnrolledInClassError>(result);
+        }
+
+        [Fact]
+        public async Task GetOtherStudentsOfClass_StudentDirectlyEnrolledInClass_ReturnsOtherStudentNames()
+        {
+            // Arrange.
+
+            User student = UserFixture().Create();
+            User student2 = UserFixture().Create();
+            User student3 = UserFixture().Create();
+            Role studentRole = RoleFixture().With(x => x.Name, Role.STUDENT).Create();
+            UserRole userRole = new() { RoleId = studentRole.Id, UserId = student.Id };
+
+            Class clss = ClassFixture().Create();
+
+            ClassEnrollment classEnrollment1 = new() { ClassId = clss.Id, StudentId = student.Id };
+            ClassEnrollment classEnrollment2 = new() { ClassId = clss.Id, StudentId = student2.Id };
+            ClassEnrollment classEnrollment3 = new() { ClassId = clss.Id, StudentId = student3.Id };
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student, student2, student3]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, [classEnrollment1, classEnrollment2, classEnrollment3]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, []);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            ClassService classService = GetClassService(dbContext);
+
+            // Act.
+
+            Result<List<string>> result = await classService.GetOtherStudentNamesOfClassAsync(student.Id.ToString(), clss.Id.ToString());
+
+            // Assert.
+
+            TestSuccess(result);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            List<string>? response = result.Value;
+            response.Should().NotBeNull();
+            response.Should().HaveCount(2);
+
+            response.Should().NotContain(student.Name);
+            response.Should().Contain(student2.Name);
+            response.Should().Contain(student3.Name);
+        }
+
+        [Fact]
+        public async Task GetOtherStudentsOfClass_StudentEnrolledInClassThroughCourse_ReturnsOtherStudentNames()
+        {
+            // Arrange.
+
+            User student = UserFixture().Create();
+            User student2 = UserFixture().Create();
+            User student3 = UserFixture().Create();
+            Role studentRole = RoleFixture().With(x => x.Name, Role.STUDENT).Create();
+            UserRole userRole = new() { RoleId = studentRole.Id, UserId = student.Id };
+
+            Class clss = ClassFixture().Create();
+            Course course = CourseFixture().Create();
+
+            CourseClass courseClass = new() { CourseId = course.Id, ClassId = clss.Id };
+
+            CourseEnrollment courseEnrollment1 = new() { CourseId = course.Id, StudentId = student.Id};
+            CourseEnrollment courseEnrollment2 = new() { CourseId = course.Id, StudentId = student2.Id};
+            CourseEnrollment courseEnrollment3 = new() { CourseId = course.Id, StudentId = student3.Id};
+
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student, student2, student3]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, []);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, [courseClass]);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, [courseEnrollment1, courseEnrollment2, courseEnrollment3]);
+            ApplicationDbContext dbContext = mockDbContext.Object;
+
+            ClassService classService = GetClassService(dbContext);
+
+            // Act.
+
+            Result<List<string>> result = await classService.GetOtherStudentNamesOfClassAsync(student.Id.ToString(), clss.Id.ToString());
+
+            // Assert.
+
+            TestSuccess(result);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            List<string>? response = result.Value;
+            response.Should().NotBeNull();
+            response.Should().HaveCount(2);
+
+            response.Should().NotContain(student.Name);
+            response.Should().Contain(student2.Name);
+            response.Should().Contain(student3.Name);
+        }
     }
 }

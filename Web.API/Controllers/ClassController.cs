@@ -93,6 +93,18 @@ namespace Web.API.Controllers
         }
 
         [HttpGet]
+        [Route("class/{classId}/other-students")]
+        [Authorize(Roles = $"{Role.STUDENT}")]
+        public async Task<IActionResult> GetOtherStudentNamesOfClassAsync(string classId)
+        {
+            string currentUserId = httpHelper.GetCurrentUserId().ToString();
+
+            Result<List<string>> result = await classService.GetOtherStudentNamesOfClassAsync(currentUserId, classId);
+
+            return ApiResult(result);
+        }
+
+        [HttpGet]
         [Route("my-classes")]
         [Authorize(Roles = $"{Role.STUDENT}")]
         public async Task<IActionResult> GetClassesOfStudentAsync()
