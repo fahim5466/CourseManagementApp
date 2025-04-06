@@ -12,25 +12,25 @@ namespace Web.API.Controllers
     public class UserController(IUserService userService) : BaseController
     {
         [HttpPost]
-        [Route("register/student")]
+        [Route("student")]
         public async Task<IActionResult> RegisterStudentAsync(UserRequestDto request)
         {
-            Result result = await userService.RegisterStudentAsync(request);
+            Result<UserResponseDto> result = await userService.RegisterStudentAsync(request);
 
             return ApiResult(result);
         }
 
-        [HttpPost]
-        [Route("student/update")]
+        [HttpPut]
+        [Route("student/{id}")]
         public async Task<IActionResult> UpdateStudentAsync(string id, UserRequestDto request)
         {
-            Result result = await userService.UpdateStudentAsync(id, request);
+            Result<UserResponseDto> result = await userService.UpdateStudentAsync(id, request);
 
             return ApiResult(result);
         }
 
         [HttpGet]
-        [Route("student")]
+        [Route("student/{id}")]
         public async Task<IActionResult> GetStudentByIdAsync(string id)
         {
             Result<UserResponseDto> result = await userService.GetStudentByIdAsync(id);
@@ -47,8 +47,8 @@ namespace Web.API.Controllers
             return ApiResult(result);
         }
 
-        [HttpGet]
-        [Route("student/delete")]
+        [HttpDelete]
+        [Route("student/{id}")]
         public async Task<IActionResult> DeleteStudentAsync(string id)
         {
             Result result = await userService.DeleteStudentAsync(id);

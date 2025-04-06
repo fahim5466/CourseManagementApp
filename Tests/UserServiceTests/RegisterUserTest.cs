@@ -1,4 +1,5 @@
-﻿using Application.DTOs.User;
+﻿using Application.DTOs;
+using Application.DTOs.User;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
@@ -29,7 +30,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request);
+            Result<UserResponseDto> result = await userService.RegisterStudentAsync(request);
 
             // Assert.
 
@@ -59,7 +60,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request);
+            Result<UserResponseDto> result = await userService.RegisterStudentAsync(request);
 
             // Assert.
 
@@ -93,7 +94,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request);
+            Result<UserResponseDto> result = await userService.RegisterStudentAsync(request);
 
             // Assert.
 
@@ -120,7 +121,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.RegisterStudentAsync(request);
+            Result<UserResponseDto> result = await userService.RegisterStudentAsync(request);
 
             // Assert.
 
@@ -138,6 +139,10 @@ namespace Tests.UserServiceTests
             newUser.RefreshTokenExpires.Should().BeNull();
             newUser.Roles.Should().HaveCount(1);
             newUser.Roles.Should().Contain(r => r.Name == Role.STUDENT);
+
+            UserResponseDto? response = result.Value;
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(newUser.ToUserResponseDto());
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Class;
+﻿using Application.DTOs;
+using Application.DTOs.Class;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
@@ -37,7 +38,7 @@ namespace Tests.ClassServiceTests
 
             // Act.
 
-            Result result = await classService.CreateClassAsync(request);
+            Result<ClassResponseDto> result = await classService.CreateClassAsync(request);
 
             // Assert.
 
@@ -80,7 +81,7 @@ namespace Tests.ClassServiceTests
 
             // Act.
 
-            Result result = await classService.CreateClassAsync(request);
+            Result<ClassResponseDto> result = await classService.CreateClassAsync(request);
 
             // Assert.
 
@@ -103,7 +104,7 @@ namespace Tests.ClassServiceTests
 
             // Act.
 
-            Result result = await classService.CreateClassAsync(request);
+            Result<ClassResponseDto> result = await classService.CreateClassAsync(request);
 
             // Assert.
 
@@ -112,6 +113,10 @@ namespace Tests.ClassServiceTests
 
             Class? newClass = await classRepository.GetClassByNameAsync(request.Name);
             newClass.Should().NotBeNull();
+
+            ClassResponseDto? response = result.Value;
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(newClass.ToClassResponseDto());
         }
     }
 }

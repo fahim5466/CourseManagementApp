@@ -1,4 +1,5 @@
-﻿using Application.DTOs.User;
+﻿using Application.DTOs;
+using Application.DTOs.User;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
@@ -36,7 +37,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
+            Result<UserResponseDto> result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
 
             // Assert.
 
@@ -72,7 +73,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
+            Result<UserResponseDto> result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
 
             // Assert.
 
@@ -112,7 +113,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(Guid.NewGuid().ToString(), request);
+            Result<UserResponseDto> result = await userService.UpdateStudentAsync(Guid.NewGuid().ToString(), request);
 
             // Assert.
 
@@ -140,7 +141,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
+            Result<UserResponseDto> result = await userService.UpdateStudentAsync(user.Id.ToString(), request);
 
             // Assert.
 
@@ -170,7 +171,7 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user1.Id.ToString(), request);
+            Result<UserResponseDto> result = await userService.UpdateStudentAsync(user1.Id.ToString(), request);
 
             // Assert.
 
@@ -202,12 +203,12 @@ namespace Tests.UserServiceTests
 
             // Act.
 
-            Result result = await userService.UpdateStudentAsync(user1.Id.ToString(), request);
+            Result<UserResponseDto> result = await userService.UpdateStudentAsync(user1.Id.ToString(), request);
 
             // Assert.
 
             TestSuccess(result);
-            result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
             User? updatedStudent = await userRepository.GetStudentByIdAsync(user1.Id.ToString());
             updatedStudent.Should().NotBeNull();
@@ -219,6 +220,10 @@ namespace Tests.UserServiceTests
             updatedStudent.IsEmailVerified.Should().BeFalse();
             updatedStudent.EmailVerificationToken.Should().NotBeNull();
             updatedStudent.EmailVerificationTokenExpires.Should().NotBeNull();
+
+            UserResponseDto? response = result.Value;
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(updatedStudent.ToUserResponseDto());
         }
     }
 }

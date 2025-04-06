@@ -9,7 +9,7 @@ using static Application.Services.AuthService;
 
 namespace Web.API.Controllers
 {
-    public class AuthController(IAuthService authService, ISecurityTokenProvider securityTokenProvider,ILogger<AuthController> logger) : BaseController
+    public class AuthController(IAuthService authService, ISecurityTokenProvider securityTokenProvider, ILogger<AuthController> logger) : BaseController
     {
         [HttpPost]
         [Route("login")]

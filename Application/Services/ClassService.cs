@@ -18,8 +18,8 @@ namespace Application.Services
     {
         public Task<Result<ClassResponseDto>> GetClassByIdAsync(string id);
         public Task<Result<List<ClassResponseDto>>> GetAllClassesAsync();
-        public Task<Result> CreateClassAsync(ClassRequestDto request);
-        public Task<Result> UpdateClassAsync(string id, ClassRequestDto request);
+        public Task<Result<ClassResponseDto>> CreateClassAsync(ClassRequestDto request);
+        public Task<Result<ClassResponseDto>> UpdateClassAsync(string id, ClassRequestDto request);
         public Task<Result> DeleteClassAsync(string id);
         public Task<Result> EnrollStudentInClassAsync(ClassEnrollmentRequestDto request);
         public Task<Result<List<CourseResponseDto>>> GetCoursesOfClassAsync(string id);
@@ -52,54 +52,55 @@ namespace Application.Services
                         classes.Select(c => c.ToClassResponseDto()).ToList());
         }
 
-        public async Task<Result> CreateClassAsync(ClassRequestDto request)
+        public async Task<Result<ClassResponseDto>> CreateClassAsync(ClassRequestDto request)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
             if(!validationOutcome.IsValid)
             {
-                return Result.Failure(new BadClassCreateOrUpdateRequest(validationOutcome.Errors));
+                return Result<ClassResponseDto>.Failure(new BadClassCreateOrUpdateRequest(validationOutcome.Errors));
             }
 
             // Class name should be unique.
             Class? existingClass = await classRepository.GetClassByNameAsync(request.Name);
             if(existingClass is not null)
             {
-                return Result.Failure(new ClassAlreadyExistsError());
+                return Result<ClassResponseDto>.Failure(new ClassAlreadyExistsError());
             }
 
-            await classRepository.CreateClassAsync(new() { Id = Guid.NewGuid(), Name = request.Name});
+            Class newClass = new() { Id = Guid.NewGuid(), Name = request.Name };
+            await classRepository.CreateClassAsync(newClass);
 
-            return Result.Success(StatusCodes.Status201Created);
+            return Result<ClassResponseDto>.Success(StatusCodes.Status201Created, newClass.ToClassResponseDto());
         }
 
-        public async Task<Result> UpdateClassAsync(string id, ClassRequestDto request)
+        public async Task<Result<ClassResponseDto>> UpdateClassAsync(string id, ClassRequestDto request)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
             if (!validationOutcome.IsValid)
             {
-                return Result.Failure(new BadClassCreateOrUpdateRequest(validationOutcome.Errors));
+                return Result<ClassResponseDto>.Failure(new BadClassCreateOrUpdateRequest(validationOutcome.Errors));
             }
 
             // Class not found.
             Class? clss = await classRepository.GetClassByIdAsync(id);
             if (clss is null)
             {
-                return Result.Failure(new ClassDoesNotExistError());
+                return Result<ClassResponseDto>.Failure(new ClassDoesNotExistError());
             }
 
             // New name should be unique.
-            Class? existingClass = await classRepository.GetClassByNameAsync(request.Name, id);
-            if (existingClass is not null)
+            Class? existingClassWithSameName = await classRepository.GetClassByNameAsync(request.Name, id);
+            if (existingClassWithSameName is not null)
             {
-                return Result.Failure(new ClassAlreadyExistsError());
+                return Result<ClassResponseDto>.Failure(new ClassAlreadyExistsError());
             }
 
             clss.Name = request.Name;
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success(StatusCodes.Status204NoContent);
+            return Result<ClassResponseDto>.Success(StatusCodes.Status200OK, clss.ToClassResponseDto());
         }
 
         public async Task<Result> DeleteClassAsync(string id)

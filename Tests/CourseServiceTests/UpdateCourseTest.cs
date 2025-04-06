@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Course;
+﻿using Application.DTOs;
+using Application.DTOs.Course;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
@@ -37,7 +38,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
 
             // Assert.
 
@@ -84,7 +85,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.UpdateCourseAsync(course1.Id.ToString(), request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.UpdateCourseAsync(course1.Id.ToString(), request);
 
             // Assert.
 
@@ -108,7 +109,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.UpdateCourseAsync(Guid.NewGuid().ToString(), request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.UpdateCourseAsync(Guid.NewGuid().ToString(), request);
 
             // Assert.
 
@@ -134,7 +135,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
 
             // Assert.
 
@@ -164,12 +165,12 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.UpdateCourseAsync(course.Id.ToString(), request);
 
             // Assert.
 
             TestSuccess(result);
-            result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
             Course? updatedCourse = await courseRepository.GetCourseByIdWithClassesAsync(course.Id.ToString());
             updatedCourse.Should().NotBeNull();
@@ -177,6 +178,10 @@ namespace Tests.CourseServiceTests
             updatedCourse.Classes.Should().HaveCount(1);
             updatedCourse.Classes.Should().NotContain(x => x.Id == clss1.Id);
             updatedCourse.Classes.Should().Contain(x => x.Id == clss2.Id);
+
+            CourseResponseDtoWithClasses? response = result.Value;
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(updatedCourse.ToCourseResponseDtoWithClasses());
         }
     }
 }

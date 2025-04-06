@@ -14,7 +14,7 @@ namespace Web.API.Controllers
     public class ClassController(IClassService classService, IHttpHelper httpHelper) : BaseController
     {
         [HttpGet]
-        [Route("class")]
+        [Route("class/{id}")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> GetClassByIdAsync(string id)
         {
@@ -34,27 +34,27 @@ namespace Web.API.Controllers
         }
 
         [HttpPost]
-        [Route("class/create")]
+        [Route("class")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> CreateClassAsync(ClassRequestDto request)
         {
-            Result result = await classService.CreateClassAsync(request);
+            Result<ClassResponseDto> result = await classService.CreateClassAsync(request);
 
             return ApiResult(result);
         }
 
-        [HttpPost]
-        [Route("class/update")]
+        [HttpPut]
+        [Route("class/{id}")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> UpdateClassAsync(string id, [FromBody] ClassRequestDto request)
         {
-            Result result = await classService.UpdateClassAsync(id, request);
+            Result<ClassResponseDto> result = await classService.UpdateClassAsync(id, request);
 
             return ApiResult(result);
         }
 
-        [HttpGet]
-        [Route("class/delete")]
+        [HttpDelete]
+        [Route("class/{id}")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> DeleteClassAsync(string id)
         {

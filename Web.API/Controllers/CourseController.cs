@@ -1,6 +1,5 @@
 ﻿using Application.DTOs.Class;
 using Application.DTOs.Course;
-using Application.DTOs.Course;
 using Application.DTOs.User;
 using Application.Interfaces;
 using Application.Services;
@@ -14,17 +13,17 @@ namespace Web.API.Controllers
     public class CourseController(ICourseService courseService, IHttpHelper httpHelper) : BaseController
     {
         [HttpPost]
-        [Route("course/create")]
+        [Route("course")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> CreateCourseAsync(CourseRequestDto request)
         {
-            Result result = await courseService.CreateCourseAsync(request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.CreateCourseAsync(request);
 
             return ApiResult(result);
         }
 
         [HttpGet]
-        [Route("course")]
+        [Route("course/{id}")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> GetCourseByIdAsync(string id)
         {
@@ -43,18 +42,18 @@ namespace Web.API.Controllers
             return ApiResult(result);
         }
 
-        [HttpPost]
-        [Route("course/update")]
+        [HttpPut]
+        [Route("course/{id}")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> UpdateCourseAsync(string id, [FromBody] CourseRequestDto request)
         {
-            Result result = await courseService.UpdateCourseAsync(id, request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.UpdateCourseAsync(id, request);
 
             return ApiResult(result);
         }
 
-        [HttpGet]
-        [Route("course/delete")]
+        [HttpDelete]
+        [Route("course/{id}")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> DeleteCourseAsync(string id)
         {

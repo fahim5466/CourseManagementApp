@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Class;
+﻿using Application.DTOs;
+using Application.DTOs.Class;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
@@ -38,7 +39,7 @@ namespace Tests.ClassServiceTests
 
             // Act.
 
-            Result result = await classService.UpdateClassAsync(clss.Id.ToString(), request);
+            Result<ClassResponseDto> result = await classService.UpdateClassAsync(clss.Id.ToString(), request);
 
             // Assert.
 
@@ -81,7 +82,7 @@ namespace Tests.ClassServiceTests
 
             // Act.
 
-            Result result = await classService.UpdateClassAsync(id, request);
+            Result<ClassResponseDto> result = await classService.UpdateClassAsync(id, request);
 
             // Assert.
 
@@ -106,7 +107,7 @@ namespace Tests.ClassServiceTests
 
             // Act.
 
-            Result result = await classService.UpdateClassAsync(clss1.Id.ToString(), request);
+            Result<ClassResponseDto> result = await classService.UpdateClassAsync(clss1.Id.ToString(), request);
 
             // Assert.
 
@@ -132,16 +133,20 @@ namespace Tests.ClassServiceTests
 
             // Act.
 
-            Result result = await classService.UpdateClassAsync(clss1.Id.ToString(), request);
+            Result<ClassResponseDto> result = await classService.UpdateClassAsync(clss1.Id.ToString(), request);
 
             // Assert.
 
             TestSuccess(result);
-            result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
             Class? updatedClass = await classRepository.GetClassByIdAsync(clss1.Id.ToString());
             updatedClass.Should().NotBeNull();
             updatedClass.Name.Should().Be("abcde");
+
+            ClassResponseDto? response = result.Value;
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(updatedClass.ToClassResponseDto());
         }
     }
 }

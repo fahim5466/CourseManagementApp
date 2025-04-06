@@ -18,8 +18,8 @@ namespace Application.Services
     {
         public Task<Result<CourseResponseDtoWithClasses>> GetCourseByIdAsync(string id);
         public Task<Result<List<CourseResponseDtoWithClasses>>> GetAllCoursesAsync();
-        public Task<Result> CreateCourseAsync(CourseRequestDto request);
-        public Task<Result> UpdateCourseAsync(string id, CourseRequestDto request);
+        public Task<Result<CourseResponseDtoWithClasses>> CreateCourseAsync(CourseRequestDto request);
+        public Task<Result<CourseResponseDtoWithClasses>> UpdateCourseAsync(string id, CourseRequestDto request);
         public Task<Result> DeleteCourseAsync(string id);
         public Task<Result> EnrollStudentInCourseAsync(CourseEnrollmentRequestDto request);
         public Task<Result<List<ClassResponseDto>>> GetClassesOfCourseAsync(string courseId);
@@ -51,64 +51,64 @@ namespace Application.Services
                     courses.Select(course => course.ToCourseResponseDtoWithClasses()).ToList());
         }
 
-        public async Task<Result> CreateCourseAsync(CourseRequestDto request)
+        public async Task<Result<CourseResponseDtoWithClasses>> CreateCourseAsync(CourseRequestDto request)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
             if (!validationOutcome.IsValid)
             {
-                return Result.Failure(new BadCourseCreateOrUpdateRequest(validationOutcome.Errors));
+                return Result<CourseResponseDtoWithClasses>.Failure(new BadCourseCreateOrUpdateRequest(validationOutcome.Errors));
             }
 
             // Course name should be unique.
             Course? existingCourse = await courseRepository.GetCourseByNameAsync(request.Name);
             if (existingCourse is not null)
             {
-                return Result.Failure(new CourseAlreadyExistsError());
+                return Result<CourseResponseDtoWithClasses>.Failure(new CourseAlreadyExistsError());
             }
 
             // Class ids should be valid.
             bool areClassIdsValid = await classRepository.AreClassIdsValidAsync(request.ClassIds);
             if (!areClassIdsValid)
             {
-                return Result.Failure(new InvalidClassIdsError());
+                return Result<CourseResponseDtoWithClasses>.Failure(new InvalidClassIdsError());
             }
 
             List<Class> classes = await classRepository.GetClassesByIdAsync(request.ClassIds);
             Course course = new() { Id = Guid.NewGuid(), Name = request.Name, Classes = classes };
             await courseRepository.CreateCourseAsync(course);
 
-            return Result.Success(StatusCodes.Status201Created);
+            return Result<CourseResponseDtoWithClasses>.Success(StatusCodes.Status201Created, course.ToCourseResponseDtoWithClasses());
         }
 
-        public async Task<Result> UpdateCourseAsync(string id, CourseRequestDto request)
+        public async Task<Result<CourseResponseDtoWithClasses>> UpdateCourseAsync(string id, CourseRequestDto request)
         {
             // Validate request.
             ValidationOutcome validationOutcome = Validate(request);
             if (!validationOutcome.IsValid)
             {
-                return Result.Failure(new BadCourseCreateOrUpdateRequest(validationOutcome.Errors));
+                return Result<CourseResponseDtoWithClasses>.Failure(new BadCourseCreateOrUpdateRequest(validationOutcome.Errors));
             }
 
             // Course does not exist.
             Course? course = await courseRepository.GetCourseByIdWithClassesAsync(id);
             if (course is null)
             {
-                return Result.Failure(new CourseDoesNotExistError());
+                return Result<CourseResponseDtoWithClasses>.Failure(new CourseDoesNotExistError());
             }
 
             // New name should be unique.
             Course? existingCourse = await courseRepository.GetCourseByNameAsync(request.Name, id);
             if (existingCourse is not null)
             {
-                return Result.Failure(new CourseAlreadyExistsError());
+                return Result<CourseResponseDtoWithClasses>.Failure(new CourseAlreadyExistsError());
             }
 
             // Class ids should be valid.
             bool areClassIdsValid = await classRepository.AreClassIdsValidAsync(request.ClassIds);
             if (!areClassIdsValid)
             {
-                return Result.Failure(new InvalidClassIdsError());
+                return Result<CourseResponseDtoWithClasses>.Failure(new InvalidClassIdsError());
             }
 
             List<Class> classes = await classRepository.GetClassesByIdAsync(request.ClassIds);
@@ -116,7 +116,7 @@ namespace Application.Services
             course.Classes = classes;
             await unitOfWork.SaveChangesAsync();
 
-            return Result.Success(StatusCodes.Status204NoContent);
+            return Result<CourseResponseDtoWithClasses>.Success(StatusCodes.Status200OK, course.ToCourseResponseDtoWithClasses());
         }
 
         public async Task<Result> DeleteCourseAsync(string id)

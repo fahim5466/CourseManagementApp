@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Course;
+﻿using Application.DTOs;
+using Application.DTOs.Course;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
@@ -35,7 +36,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.CreateCourseAsync(request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.CreateCourseAsync(request);
 
             // Assert.
 
@@ -78,7 +79,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.CreateCourseAsync(request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.CreateCourseAsync(request);
 
             // Assert.
 
@@ -103,7 +104,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.CreateCourseAsync(request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.CreateCourseAsync(request);
 
             // Assert.
 
@@ -130,7 +131,7 @@ namespace Tests.CourseServiceTests
 
             // Act.
 
-            Result result = await courseService.CreateCourseAsync(request);
+            Result<CourseResponseDtoWithClasses> result = await courseService.CreateCourseAsync(request);
 
             // Assert.
 
@@ -144,6 +145,10 @@ namespace Tests.CourseServiceTests
             course.Should().NotBeNull();
             course.Classes.Should().HaveCount(1);
             course.Classes[0].Id.Should().Be(clss.Id);
+
+            CourseResponseDtoWithClasses? response = result.Value;
+            response.Should().NotBeNull();
+            response.Should().BeEquivalentTo(course.ToCourseResponseDtoWithClasses());
         }
     }
 }
