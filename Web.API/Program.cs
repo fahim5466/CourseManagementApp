@@ -5,6 +5,7 @@ using Serilog;
 using Microsoft.Extensions.Options;
 using Web.API.Filters;
 using Application.Interfaces;
+using Web.API.Middlewares;
 
 namespace Web.API
 {
@@ -58,6 +59,8 @@ namespace Web.API
             }));
 
             app.UseHttpsRedirection();
+
+            app.UseMiddleware<GlobalExceptionHandler>();
 
             app.UseSerilogRequestLogging();
 
