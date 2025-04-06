@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Class;
 using Application.DTOs.Course;
+using Application.DTOs.Enrollment;
 using Application.DTOs.User;
 
 namespace Application.DTOs
@@ -42,6 +43,25 @@ namespace Application.DTOs
             {
                 Id = clss.Id.ToString(),
                 Name = clss.Name
+            };
+        }
+
+        public static ClassEnrollmentInfoDto ToClassEnrollmentInfoDto(this Domain.Relationships.ClassEnrollment classEnrollment)
+        {
+            return new()
+            {
+                CreatedBy = classEnrollment.CreatedBy,
+                CreatedOn = classEnrollment.CreatedOn
+            };
+        }
+
+        public static CourseEnrollmentInfoDto ToCourseEnrollmentInfoDto(this Domain.Relationships.CourseEnrollment courseEnrollment)
+        {
+            return new()
+            {
+                CourseId = courseEnrollment.CourseId,
+                CreatedBy = courseEnrollment.CreatedBy,
+                CreatedOn = courseEnrollment.CreatedOn
             };
         }
     }

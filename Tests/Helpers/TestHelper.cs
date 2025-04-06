@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.Dsl;
 using Domain.Entities;
+using Domain.Relationships;
 using FluentAssertions;
 using static Application.Helpers.ResultHelper;
 
@@ -67,6 +68,26 @@ namespace Tests.Helpers
             return fixture.Build<Course>()
                           .With(x => x.Id, Guid.NewGuid())
                           .With(x => x.Classes, []);
+        }
+
+        public static IPostprocessComposer<ClassEnrollment> ClassEnrollmentFixture()
+        {
+            Fixture fixture = new Fixture();
+            return fixture.Build<ClassEnrollment>()
+                          .With(x => x.ClassId, Guid.NewGuid())
+                          .With(x => x.StudentId, Guid.NewGuid())
+                          .Without(x => x.Class)
+                          .Without(x => x.Student);
+        }
+
+        public static IPostprocessComposer<CourseEnrollment> CourseEnrollmentFixture()
+        {
+            Fixture fixture = new Fixture();
+            return fixture.Build<CourseEnrollment>()
+                          .With(x => x.CourseId, Guid.NewGuid())
+                          .With(x => x.StudentId, Guid.NewGuid())
+                          .Without(x => x.Course)
+                          .Without(x => x.Student);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace Domain.Repositories
         public Task CreateCourseAsync(Course course);
         public Task DeleteCourseAsync(Course course);
         public Task<CourseEnrollment?> GetCourseEnrollmentAsync(Guid courseId, Guid studentId);
+        public Task<List<CourseEnrollment>> GetCourseEnrollmentsByClassAndStudentAsync(Guid classId, Guid studentId);
         public Task CreateCourseEnrollmentAsync(CourseEnrollment courseEnrollment);
     }
 }

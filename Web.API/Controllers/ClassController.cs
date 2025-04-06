@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.Class;
 using Application.DTOs.Course;
+using Application.DTOs.Enrollment;
 using Application.DTOs.User;
 using Application.Interfaces;
 using Application.Services;
@@ -112,6 +113,16 @@ namespace Web.API.Controllers
             string currentUserId = httpHelper.GetCurrentUserId().ToString();
 
             Result<List<ClassResponseDto>> result = await classService.GetClassesOfStudentAsync(currentUserId);
+
+            return ApiResult(result);
+        }
+
+        [HttpGet]
+        [Route("enrollment-info")]
+        [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
+        public async Task<IActionResult> GetClassEnrollmentInfoForStudentAsync(string classId, string studentId)
+        {
+            Result<EnrollmentInfoResponseDto> result = await classService.GetClassEnrollmentInfoForStudentAsync(classId, studentId);
 
             return ApiResult(result);
         }

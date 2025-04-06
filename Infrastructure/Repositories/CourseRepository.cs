@@ -87,6 +87,18 @@ namespace Infrastructure.Repositories
             return await dbContext.CourseEnrollments.FirstOrDefaultAsync(cr => cr.CourseId == courseId && cr.StudentId == studentId);
         }
 
+        public async Task<List<CourseEnrollment>> GetCourseEnrollmentsByClassAndStudentAsync(Guid classId, Guid studentId)
+        {
+            IQueryable<CourseEnrollment> query = from courseEnrollment in dbContext.CourseEnrollments
+                                                 join courseClass in dbContext.CourseClasses
+                                                 on courseEnrollment.CourseId equals courseClass.CourseId
+                                                 where courseEnrollment.StudentId == studentId &&
+                                                       courseClass.ClassId == classId
+                                                select courseEnrollment;
+
+            return await query.ToListAsync();
+        }
+
         public async Task CreateCourseEnrollmentAsync(CourseEnrollment courseEnrollment)
         {
             dbContext.CourseEnrollments.Add(courseEnrollment);

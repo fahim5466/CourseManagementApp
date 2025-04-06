@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.DTOs.Class;
 using Application.DTOs.Course;
+using Application.DTOs.Enrollment;
 using Application.DTOs.User;
 using Domain.Entities;
 using Domain.Relationships;
@@ -25,9 +26,10 @@ namespace Application.Services
         public Task<Result<List<UserResponseDto>>> GetStudentsOfClassAsync(string id);
         public Task<Result<List<string>>> GetOtherStudentNamesOfClassAsync(string studentId, string classId);
         public Task<Result<List<ClassResponseDto>>> GetClassesOfStudentAsync(string id);
+        public Task<Result<EnrollmentInfoResponseDto>> GetClassEnrollmentInfoForStudentAsync(string classId, string studentId);
     }
 
-    public class ClassService(IClassRepository classRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : IClassService
+    public class ClassService(IClassRepository classRepository, ICourseRepository courseRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : IClassService
     {
         public async Task<Result<ClassResponseDto>> GetClassByIdAsync(string id)
         {
@@ -224,6 +226,46 @@ namespace Application.Services
             List<Class> classes = await classRepository.GetClassesOfStudentAsync(id);
 
             return Result<List<ClassResponseDto>>.Success(StatusCodes.Status200OK, classes.Select(c => c.ToClassResponseDto()).ToList());
+        }
+
+        public async Task<Result<EnrollmentInfoResponseDto>> GetClassEnrollmentInfoForStudentAsync(string classId, string studentId)
+        {
+            // Class should exist.
+            Class? clss = await classRepository.GetClassByIdAsync(classId);
+            if(clss is null)
+            {
+                return Result<EnrollmentInfoResponseDto>.Failure(new ClassDoesNotExistError());
+            }
+
+            // Student should exist.
+            User? student = await userRepository.GetStudentByIdAsync(studentId);
+            if(student is null)
+            {
+                return Result<EnrollmentInfoResponseDto>.Failure(new StudentDoesNotExistError());
+            }
+
+            Guid classGuid = Guid.Parse(classId);
+            Guid studentGuid = Guid.Parse(studentId);
+
+            // Student may be enrolled directly in this class.
+            ClassEnrollment? classEnrollment = await classRepository.GetClassEnrollmentAsync(classGuid, studentGuid);
+
+            // Student may be enrolled indirectly in this class through a course.
+            List<CourseEnrollment> courseEnrollments = await courseRepository.GetCourseEnrollmentsByClassAndStudentAsync(classGuid, studentGuid);
+
+            bool isEnrolled = classEnrollment != null || courseEnrollments.Count > 0;
+
+            ClassEnrollmentInfoDto? classEnrollmentInfoDto = classEnrollment?.ToClassEnrollmentInfoDto();
+
+            List<CourseEnrollmentInfoDto> courseEnrollmentInfoDtos = courseEnrollments.Select(ce => ce.ToCourseEnrollmentInfoDto()).ToList();
+
+            return Result<EnrollmentInfoResponseDto>.Success(StatusCodes.Status200OK,
+                            new EnrollmentInfoResponseDto()
+                            {
+                                IsEnrolled = isEnrolled,
+                                DirectEnrollment = classEnrollmentInfoDto,
+                                IndirectEnrollmentsThroughCourses = courseEnrollmentInfoDtos
+                            });
         }
     }
 }
