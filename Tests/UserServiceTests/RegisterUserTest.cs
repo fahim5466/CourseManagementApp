@@ -3,12 +3,13 @@ using Application.DTOs.User;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
-using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
+using Moq;
+using Moq.EntityFrameworkCore;
 using Tests.Helpers;
 using static Application.Errors.UserErrors;
 using static Application.Helpers.ResultHelper;
@@ -85,8 +86,8 @@ namespace Tests.UserServiceTests
             // Arrange.
             User existingUser = UserFixture().With(u => u.Email, "test@test.com").Create();
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, [existingUser]);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([existingUser]);
 
             UserService userService = GetUserService(mockDbContext.Object);
 
@@ -108,9 +109,9 @@ namespace Tests.UserServiceTests
 
             Role studentRole = new() { Id = Guid.NewGuid(), Name = Role.STUDENT };
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, []);
-            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([]);
+            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
 
             ApplicationDbContext dbContext = mockDbContext.Object;
             UserRepository userRepository = new(dbContext);

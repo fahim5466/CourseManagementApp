@@ -1,5 +1,4 @@
 ﻿using Application.Interfaces;
-using EntityFrameworkCoreMock;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,11 +24,11 @@ namespace Tests.Helpers
             return mockConfiguration.Object;
         }
 
-        public static DbContextMock<ApplicationDbContext> GetMockDbContext()
+        public static Mock<ApplicationDbContext> GetMockDbContext()
         {
             DbContextOptions<ApplicationDbContext> dummyOptions = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
 
-            DbContextMock<ApplicationDbContext> mockDbContext = new DbContextMock<ApplicationDbContext>(dummyOptions, GetMockHttpHelper());
+            Mock<ApplicationDbContext> mockDbContext = new(dummyOptions, GetMockHttpHelper());
 
             return mockDbContext;
         }
@@ -37,7 +36,7 @@ namespace Tests.Helpers
         public static IEmailService GetMockEmailService()
         {
             Mock<IEmailService> mockEmailService = new Mock<IEmailService>();
-            mockEmailService.Setup(x => x.SendEmailVerificationLinkAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            mockEmailService.Setup(x => x.SendEmailVerificationLinkAsync(It.IsAny<string>(), It.IsAny<string>()))
                             .Returns(Task.FromResult(true));
             return mockEmailService.Object;
         }

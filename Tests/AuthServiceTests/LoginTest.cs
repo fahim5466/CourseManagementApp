@@ -2,11 +2,12 @@
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
-using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
+using Moq;
+using Moq.EntityFrameworkCore;
 using System.Security.Claims;
 using Tests.Helpers;
 using static Application.Errors.AuthErrors;
@@ -52,8 +53,8 @@ namespace Tests.AuthServiceTests
 
             Fixture fixture = new();
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, []);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([]);
 
             AuthService authService = GetAuthService(mockDbContext.Object);
 
@@ -80,8 +81,8 @@ namespace Tests.AuthServiceTests
                                      .With(x => x.PasswordHash, cryptoHasher.EnhancedHash("testpass"))
                                      .Create();
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
 
             AuthService authService = GetAuthService(mockDbContext.Object);
 
@@ -112,8 +113,8 @@ namespace Tests.AuthServiceTests
                                      .With(x => x.IsEmailVerified, false)
                                      .Create();
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
 
             AuthService authService = GetAuthService(mockDbContext.Object);
 
@@ -152,8 +153,8 @@ namespace Tests.AuthServiceTests
                                .With(x => x.Roles, [adminRole])
                                .Create();
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             AuthService authService = GetAuthService(dbContext);

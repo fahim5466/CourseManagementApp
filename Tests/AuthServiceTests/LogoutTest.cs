@@ -1,9 +1,10 @@
 ﻿using Application.Services;
 using AutoFixture;
 using Domain.Entities;
-using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
+using Moq;
+using Moq.EntityFrameworkCore;
 using Tests.Helpers;
 using static Application.Helpers.ResultHelper;
 using static Tests.AuthServiceTests.AuthServiceTestHelper;
@@ -21,8 +22,8 @@ namespace Tests.AuthServiceTests
             Fixture fixture = new Fixture();
             User user = UserFixture().With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(-10)).Create();
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             AuthService authService = GetAuthService(dbContext);

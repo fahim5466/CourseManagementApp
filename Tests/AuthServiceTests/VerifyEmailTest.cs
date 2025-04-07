@@ -1,10 +1,11 @@
 ﻿using Application.Services;
 using AutoFixture;
 using Domain.Entities;
-using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Microsoft.AspNetCore.Http;
+using Moq;
+using Moq.EntityFrameworkCore;
 using static Application.Errors.AuthErrors;
 using static Application.Helpers.ResultHelper;
 using static Tests.Helpers.MockDependencyHelper;
@@ -19,8 +20,8 @@ namespace Tests.AuthServiceTests
         {
             // Arrange.
 
-            DbContextMock<ApplicationDbContext> mockDbContext = GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, []);
+            Mock<ApplicationDbContext> mockDbContext = GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([]);
 
             AuthService authService = AuthServiceTestHelper.GetAuthService(mockDbContext.Object);
 
@@ -47,8 +48,8 @@ namespace Tests.AuthServiceTests
                                      .With(u => u.EmailVerificationTokenExpires, verificationTokenExpires)
                                      .Create();
 
-            DbContextMock<ApplicationDbContext> mockDbContext = GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            Mock<ApplicationDbContext> mockDbContext = GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             AuthService authService = AuthServiceTestHelper.GetAuthService(dbContext);
@@ -79,8 +80,8 @@ namespace Tests.AuthServiceTests
                                      .With(u => u.EmailVerificationTokenExpires, verificationTokenExpires)
                                      .Create();
 
-            DbContextMock<ApplicationDbContext> mockDbContext = GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            Mock<ApplicationDbContext> mockDbContext = GetMockDbContext();
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             AuthService authService = AuthServiceTestHelper.GetAuthService(dbContext);

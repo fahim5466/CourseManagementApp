@@ -1,17 +1,15 @@
-﻿using Application.DTOs;
-using Application.DTOs.Class;
-using Application.DTOs.Course;
+﻿using Application.DTOs.Course;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
 using Domain.Relationships;
-using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
+using Moq;
+using Moq.EntityFrameworkCore;
 using Tests.Helpers;
-using static Application.Errors.ClassErrors;
 using static Application.Errors.CourseErrors;
 using static Application.Errors.UserErrors;
 using static Application.Helpers.ResultHelper;
@@ -38,12 +36,12 @@ namespace Tests.CourseServiceTests
                                             .Create();
             UserRole userRole = new() { UserId = student.Id, RoleId = studentRole.Id };
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
-            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
-            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
-            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
-            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, []);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([course]);
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
+            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
+            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
+            mockDbContext.Setup(x => x.CourseEnrollments).ReturnsDbSet([]);
 
             ApplicationDbContext dbContext = mockDbContext.Object;
             CourseService courseService = GetCourseService(dbContext);
@@ -79,12 +77,12 @@ namespace Tests.CourseServiceTests
             UserRole userRole = new() { UserId = student.Id, RoleId = studentRole.Id };
             CourseEnrollment courseEnrollment = new() { CourseId = course.Id, StudentId = student.Id };
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
-            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
-            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
-            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
-            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, [courseEnrollment]);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([course]);
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
+            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
+            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
+            mockDbContext.Setup(x => x.CourseEnrollments).ReturnsDbSet([courseEnrollment]);
 
             ApplicationDbContext dbContext = mockDbContext.Object;
             CourseService courseService = GetCourseService(dbContext);
@@ -113,12 +111,12 @@ namespace Tests.CourseServiceTests
                                             .Create();
             UserRole userRole = new() { UserId = student.Id, RoleId = studentRole.Id };
 
-            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
-            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
-            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
-            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
-            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, []);
+            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([course]);
+            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
+            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
+            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
+            mockDbContext.Setup(x => x.CourseEnrollments).ReturnsDbSet([]);
 
             ApplicationDbContext dbContext = mockDbContext.Object;
             CourseRepository courseRepository = new(dbContext);
