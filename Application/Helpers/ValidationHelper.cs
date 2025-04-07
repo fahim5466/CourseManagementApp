@@ -11,9 +11,16 @@ namespace Application.Helpers
             public Dictionary<string, List<string>> Errors { get; } = errors;
         }
 
-        public static ValidationOutcome Validate<T>(T model) where T : notnull
+        public static ValidationOutcome Validate<T>(T model) where T : new()
         {
             List<ValidationResult> validationResults = [];
+            Dictionary<string, List<string>> errors = [];
+
+            // Model will be null for invalid JSON format.
+            if (model is null)
+            {
+                model = new();
+            }
 
             ValidationContext validationContext = new(model, null, null);
 
@@ -26,8 +33,6 @@ namespace Application.Helpers
             );
 
             // Generate the errors dictionary.
-            Dictionary<string, List<string>> errors = [];
-
             foreach (ValidationResult validationResult in validationResults)
             {
                 foreach (string memberName in validationResult.MemberNames)

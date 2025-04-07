@@ -8,10 +8,10 @@ namespace Application.DTOs.Auth
         public const string PASSWORD_REQ_ERR_MSG = "User password is required";
 
         [Required(ErrorMessage = EMAIL_REQ_ERR_MSG)]
-        public required string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = PASSWORD_REQ_ERR_MSG)]
-        public required string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         public void Preprocess()
         {

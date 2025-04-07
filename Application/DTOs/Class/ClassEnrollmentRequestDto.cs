@@ -2,7 +2,7 @@
 {
     public class ClassEnrollmentRequestDto
     {
-        public required string ClassId { get; set; }
-        public required string StudentId { get; set; }
+        public string ClassId { get; set; } = string.Empty;
+        public string StudentId { get; set; } = string.Empty;
     }
 }

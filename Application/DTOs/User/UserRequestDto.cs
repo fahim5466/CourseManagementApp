@@ -18,17 +18,17 @@ namespace Application.DTOs.User
         [Required(ErrorMessage = EMAIL_REQ_ERR_MSG)]
         [MaxLength(EMAIL_MAX_LENGTH, ErrorMessage = EMAIL_MAXLENGTH_ERR_MSG)]
         [EmailAddress(ErrorMessage = EMAIL_FORMAT_ERR_MSG)]
-        public required string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = PASSWORD_REQ_ERR_MSG)]
         [MinLength(PASSWORD_MIN_LENGTH, ErrorMessage = PASSWORD_MINLEN_ERR_MSG)]
         [MaxLength(PASSWORD_MAX_LENGTH, ErrorMessage = PASSWORD_MAXLEN_ERR_MSG)]
-        public required string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         [Required(ErrorMessage = NAME_REQ_ERR_MSG)]
         [MinLength(NAME_MIN_LENGTH, ErrorMessage = NAME_MINLEN_ERR_MSG)]
         [MaxLength(NAME_MAX_LENGTH, ErrorMessage = NAME_MAXLEN_ERR_MSG)]
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public void Preprocess()
         {

@@ -4,7 +4,7 @@ namespace Application.DTOs.Auth
 {
     public class RefreshTokenRequestDto
     {
-        public required string JwtToken { get; set; }
-        public required string RefreshToken { get; set; }
+        public string JwtToken { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } = string.Empty;
     }
 }

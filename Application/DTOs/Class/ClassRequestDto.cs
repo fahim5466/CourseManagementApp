@@ -14,7 +14,7 @@ namespace Application.DTOs.Class
         [MinLength(NAME_MIN_LENGTH, ErrorMessage = NAME_MINLEN_ERR_MSG)]
         [MaxLength(NAME_MAX_LENGTH, ErrorMessage = NAME_MAXLEN_ERR_MSG)]
         [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = NAME_ALPHNUM_ERR_MSG)]
-        public required string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public void Preprocess()
         {
