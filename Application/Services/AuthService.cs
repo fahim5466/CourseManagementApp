@@ -107,7 +107,7 @@ namespace Application.Services
 
             // Validate user.
             string email = securityTokenProvider.GetEmailFromClaims(claimsPrincipal);
-            User? user = await userRepository.GetUserByEmailAsync(email);
+            User? user = await userRepository.GetUserByEmailWithRolesAsync(email);
 
             if(user == null || user.RefreshTokenHash == null || user.RefreshTokenExpires == null)
             {

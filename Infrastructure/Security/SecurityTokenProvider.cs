@@ -81,7 +81,7 @@ namespace Infrastructure.Security
 
         public string CreateRefreshToken()
         {
-            return Convert.ToBase64String(CreateToken(REFRESH_TOKEN_SIZE_IN_BYTES));
+            return Convert.ToHexString(CreateToken(REFRESH_TOKEN_SIZE_IN_BYTES));
         }
 
         public string CreateEmailVerificationToken()

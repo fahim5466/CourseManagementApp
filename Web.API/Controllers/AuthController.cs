@@ -9,7 +9,7 @@ using static Application.Services.AuthService;
 
 namespace Web.API.Controllers
 {
-    public class AuthController(IAuthService authService, ISecurityTokenProvider securityTokenProvider, ILogger<AuthController> logger) : BaseController
+    public class AuthController(IAuthService authService, ISecurityTokenProvider securityTokenProvider, IHttpHelper httpHelper, ILogger<AuthController> logger) : BaseController
     {
         [HttpPost]
         [Route("login")]
@@ -17,9 +17,15 @@ namespace Web.API.Controllers
         {
             Result<LoginResponseDto> result = await authService.LoginAsync(request);
 
+            if(result.Value is not null)
+            {
+                httpHelper.SetAccessTokenCookie(result.Value.JwtToken);
+                httpHelper.SetRefreshTokenCookie(result.Value.RefreshToken);
+            }
+
             LogResult(result, logger);
 
-            return ApiResult(result);
+            return ApiResult((Result)result);
         }
 
         [HttpGet]
@@ -31,13 +37,24 @@ namespace Web.API.Controllers
             return ApiResult(result);
         }
 
-        [HttpPost]
-        [Route("refreshtoken")]
-        public async Task<IActionResult> RefreshTokenAsync(RefreshTokenRequestDto request)
+        [HttpGet]
+        [Route("refresh-token")]
+        public async Task<IActionResult> RefreshTokenAsync()
         {
+            string jwtToken = HttpContext.Request.Cookies[HttpHelper.ACCESS_TOKEN_COOKIE_KEY] ?? string.Empty;
+            string refreshToken = HttpContext.Request.Cookies[HttpHelper.REFRESH_TOKEN_COOKIE_KEY] ?? string.Empty;
+
+            RefreshTokenRequestDto request = new() { JwtToken = jwtToken, RefreshToken = refreshToken };
+
             Result<RefreshTokenResponseDto> result = await authService.RefreshTokenAsync(request);
 
-            return ApiResult(result);
+            if (result.Value is not null)
+            {
+                httpHelper.SetAccessTokenCookie(result.Value.JwtToken);
+                httpHelper.SetRefreshTokenCookie(result.Value.RefreshToken);
+            }
+
+            return ApiResult((Result)result);
         }
 
         [HttpGet]

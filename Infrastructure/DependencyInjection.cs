@@ -79,6 +79,15 @@ namespace Infrastructure
                     ValidAudience = configuration["Jwt:Audience"]!,
                     ClockSkew = TimeSpan.Zero
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["AccessToken"];
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             services.AddSingleton<ICryptoHasher, CryptoHasher>();

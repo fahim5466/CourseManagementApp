@@ -20,7 +20,7 @@ namespace Infrastructure.Notifications
 
         public async Task SendEmailVerificationLinkAsync(string email, string pathPrefix, string verificationToken)
         {
-            string href = $"{pathPrefix}/{AuthService.VERIFY_EMAIL_ROUTE}?verificationToken={verificationToken}";
+            string href = $"{pathPrefix}/api/{AuthService.VERIFY_EMAIL_ROUTE}?verificationToken={verificationToken}";
             await SendEmailAsync(email, "Verify your email", $"Please click this <a href={href}>link</a> to verify your email.");
         }
     }
