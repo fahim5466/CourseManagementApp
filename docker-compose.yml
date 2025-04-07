@@ -14,6 +14,20 @@ services:
       dockerfile: Web.API/Dockerfile
     volumes:
       - ./app_logs:/app/logs
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=coursemanage.database;Port=5432;Database=coursemanage;Username=postgres;Password=postgres;
+      - Jwt__Secret=my-secret-key-that-is-not-great-but-will-work-for-testing
+      - Jwt__ExpirationInMinutes=15
+      - Jwt__Issuer=my-app
+      - Jwt__Audience=my-app
+      - RefTok__ExpirationInMinutes=120
+      - Email__Sender=CourseManage Email Notification System
+      - Email__SenderEmail=coursemanage@noreply.com
+      - Email__Host=coursemanage.emailservice
+      - Email__Port=25
+      - Email__VerificationTokenExpirationInMinutes=15
+      - Serilog__WriteTo__2__Args__serverUrl=http://coursemanage.logging:5341
+
 
   coursemanage.database:
     image: postgres:latest
