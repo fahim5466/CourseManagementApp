@@ -365,3 +365,4 @@ FodyWeavers.xsd
 # Database
 app_db/
 app_logs/
+https_cert/
