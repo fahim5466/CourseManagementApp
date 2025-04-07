@@ -33,7 +33,6 @@ namespace Web.API
                                  options.AllowInputFormatterExceptionMessages = false;
                              });
 
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -45,18 +44,11 @@ namespace Web.API
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
                 app.ApplyMigrations();
-            }
-
-
-            app.MapGet("/", () => Results.Ok(new
-            {
-                message = "Hello from the course management app!"
-            }));
+            };
 
             app.UseHttpsRedirection();
 

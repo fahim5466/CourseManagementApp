@@ -2,7 +2,7 @@
 
 namespace Application.DTOs.Auth
 {
-    public class LoginRequestDto : IRequestDto
+    public class LoginRequestDto : IPreprocessDto
     {
         public const string EMAIL_REQ_ERR_MSG = "User email is required";
         public const string PASSWORD_REQ_ERR_MSG = "User password is required";

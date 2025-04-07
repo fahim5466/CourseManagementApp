@@ -8,7 +8,6 @@ namespace Domain.Repositories
         public Task<Course?> GetCourseByIdAsync(string id);
         public Task<Course?> GetCourseByIdWithClassesAsync(string id);
         public Task<Course?> GetCourseByNameAsync(string name);
-        public Task<Course?> GetCourseByNameAsync(string name, string idToExclude);
         public Task<List<Course>> GetAllCoursesAsync();
         public Task<List<User>> GetStudentsOfCourseAsync(string id);
         public Task<List<Course>> GetCoursesOfStudentAsync(string id);

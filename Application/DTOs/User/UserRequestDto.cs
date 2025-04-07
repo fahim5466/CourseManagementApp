@@ -3,17 +3,17 @@ using static Domain.Entities.User;
 
 namespace Application.DTOs.User
 {
-    public class UserRequestDto : IRequestDto
+    public class UserRequestDto : IPreprocessDto
     {
         public const string EMAIL_REQ_ERR_MSG = "Email is required";
-        public const string EMAIL_MAXLENGTH_ERR_MSG = $"Email is too long";
+        public const string EMAIL_MAXLENGTH_ERR_MSG = $"Email cannot be more than {EMAIL_MAX_LENGTH_STR} characters";
         public const string EMAIL_FORMAT_ERR_MSG = "Email format is not correct";
         public const string PASSWORD_REQ_ERR_MSG = "Password is required";
-        public const string PASSWORD_MINLEN_ERR_MSG = "Password is too short";
-        public const string PASSWORD_MAXLEN_ERR_MSG = "Password is too long";
+        public const string PASSWORD_MINLEN_ERR_MSG = $"Password cannot be less than {PASSWORD_MIN_LENGTH_STR} characters";
+        public const string PASSWORD_MAXLEN_ERR_MSG = $"Password cannot be more than {PASSWORD_MAX_LENGTH_STR} characters";
         public const string NAME_REQ_ERR_MSG = "Name is required";
-        public const string NAME_MINLEN_ERR_MSG = "Name is too short";
-        public const string NAME_MAXLEN_ERR_MSG = "Name is too long";
+        public const string NAME_MINLEN_ERR_MSG = $"Name cannot be less than {NAME_MIN_LENGTH_STR} characters";
+        public const string NAME_MAXLEN_ERR_MSG = $"Name cannot be more than {NAME_MAX_LENGTH_STR} characters";
 
         [Required(ErrorMessage = EMAIL_REQ_ERR_MSG)]
         [MaxLength(EMAIL_MAX_LENGTH, ErrorMessage = EMAIL_MAXLENGTH_ERR_MSG)]

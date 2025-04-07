@@ -38,17 +38,12 @@ namespace Infrastructure.Repositories
 
         public async Task<User?> GetStudentByIdAsync(string id)
         {
-            if(!Guid.TryParse(id, out Guid guid))
-            {
-                return null;
-            }
-
             IQueryable<User> query = from user in dbContext.Users
                                      join userRole in dbContext.UserRoles
                                      on user.Id equals userRole.UserId
                                      join role in dbContext.Roles
                                      on userRole.RoleId equals role.Id
-                                     where user.Id == guid &&
+                                     where user.Id.ToString().ToLower() == id.ToLower() &&
                                            role.Name == Role.STUDENT
                                      select user;
 

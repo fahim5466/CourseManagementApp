@@ -34,6 +34,8 @@ namespace Web.API.Controllers
         {
             Result result = await authService.VerifyEmailAsync(verificationToken);
 
+            LogResult(result, logger);
+
             return ApiResult(result);
         }
 
@@ -54,6 +56,8 @@ namespace Web.API.Controllers
                 httpHelper.SetRefreshTokenCookie(result.Value.RefreshToken);
             }
 
+            LogResult(result, logger);
+
             return ApiResult((Result)result);
         }
 
@@ -65,6 +69,8 @@ namespace Web.API.Controllers
             string email = securityTokenProvider.GetEmailFromClaims(HttpContext.User);
 
             Result result = await authService.LogoutAsync(email);
+
+            LogResult(result, logger);
 
             return ApiResult(result);
         }

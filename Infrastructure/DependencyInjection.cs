@@ -1,5 +1,4 @@
-﻿using Application;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Services;
 using Domain.Repositories;
 using Infrastructure.Database;
@@ -33,7 +32,6 @@ namespace Infrastructure
 
             services.AddDbContext<ApplicationDbContext>(
                 options => options.UseNpgsql(connectionString)
-                                  .LogTo(Console.WriteLine, LogLevel.Information)
                                   .UseSnakeCaseNamingConvention());
 
             return services;

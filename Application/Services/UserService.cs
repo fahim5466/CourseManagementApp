@@ -14,13 +14,13 @@ namespace Application.Services
     public interface IUserService
     {
         public Task<Result<UserResponseDto>> RegisterStudentAsync(UserRequestDto request);
-        public Task<Result<UserResponseDto>> UpdateStudentAsync(string id, UserRequestDto request);
         public Task<Result<UserResponseDto>> GetStudentByIdAsync(string id);
         public Task<Result<List<UserResponseDto>>> GetAllStudentsAsync();
+        public Task<Result<UserResponseDto>> UpdateStudentAsync(string id, UserRequestDto request);
         public Task<Result> DeleteStudentAsync(string id);
     }
 
-    public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IHttpHelper httpHelper, IConfiguration configuration, IUnitOfWork unitOfWork) : IUserService
+    public class UserService(IUserRepository userRepository, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider, IEmailService emailService, IConfiguration configuration, IUnitOfWork unitOfWork) : IUserService
     {
         public async Task<Result<UserResponseDto>> RegisterStudentAsync(UserRequestDto request)
         {
@@ -33,7 +33,7 @@ namespace Application.Services
 
             // Email has to be unique.
             User? existingUser = await userRepository.GetUserByEmailAsync(request.Email);
-            if(existingUser != null)
+            if(existingUser is not null)
             {
                 return Result<UserResponseDto>.Failure(new UserAlreadyExistsError());
             }
@@ -52,13 +52,33 @@ namespace Application.Services
                 EmailVerificationToken = emailVerificationToken,
                 EmailVerificationTokenExpires = DateTime.UtcNow.AddMinutes(emailVerificationTokenExpiration)
             };
+
             await userRepository.CreateUserWithRolesAsync(newUser, [Role.STUDENT]);
 
-            await emailService.SendEmailVerificationLinkAsync(request.Email, httpHelper.GetHostPathPrefix(), emailVerificationToken);
+            // Send email verification link.
+            await emailService.SendEmailVerificationLinkAsync(request.Email, emailVerificationToken);
 
-            Result<UserResponseDto> result = Result<UserResponseDto>.Success(StatusCodes.Status201Created, newUser.ToUserResponseDto());
+            return Result<UserResponseDto>.Success(StatusCodes.Status201Created, newUser.ToUserResponseDto());
+        }
 
-            return result;
+        public async Task<Result<UserResponseDto>> GetStudentByIdAsync(string id)
+        {
+            User? student = await userRepository.GetStudentByIdAsync(id);
+
+            // Student should exist.
+            if (student is null)
+            {
+                return Result<UserResponseDto>.Failure(new StudentDoesNotExistError());
+            }
+
+            return Result<UserResponseDto>.Success(StatusCodes.Status200OK, student.ToUserResponseDto());
+        }
+
+        public async Task<Result<List<UserResponseDto>>> GetAllStudentsAsync()
+        {
+            List<User> users = await userRepository.GetAllStudentsAsync();
+
+            return Result<List<UserResponseDto>>.Success(StatusCodes.Status200OK, users.Select(u => u.ToUserResponseDto()).ToList());
         }
 
         public async Task<Result<UserResponseDto>> UpdateStudentAsync(string id, UserRequestDto request)
@@ -70,7 +90,7 @@ namespace Application.Services
                 return Result<UserResponseDto>.Failure(new BadRegisterOrUpdateUserRequest(validationOutcome.Errors));
             }
 
-            // Student does not exist.
+            // Student should exist.
             User? student = await userRepository.GetStudentByIdAsync(id);
             if (student is null)
             {
@@ -106,30 +126,10 @@ namespace Application.Services
 
             if(emailChanged)
             {
-                await emailService.SendEmailVerificationLinkAsync(student.Email, httpHelper.GetHostPathPrefix(), student.EmailVerificationToken!);
+                await emailService.SendEmailVerificationLinkAsync(student.Email, student.EmailVerificationToken!);
             }
 
             return Result<UserResponseDto>.Success(StatusCodes.Status200OK, student.ToUserResponseDto());
-        }
-
-        public async Task<Result<UserResponseDto>> GetStudentByIdAsync(string id)
-        {
-            User? student = await userRepository.GetStudentByIdAsync(id);
-
-            // Student does not exist.
-            if (student is null)
-            {
-                return Result<UserResponseDto>.Failure(new StudentDoesNotExistError());
-            }
-
-            return Result<UserResponseDto>.Success(StatusCodes.Status200OK, student.ToUserResponseDto());
-        }
-
-        public async Task<Result<List<UserResponseDto>>> GetAllStudentsAsync()
-        {
-            List<User> users = await userRepository.GetAllStudentsAsync();
-
-            return Result<List<UserResponseDto>>.Success(StatusCodes.Status200OK, users.Select(u => u.ToUserResponseDto()).ToList());
         }
 
         public async Task<Result> DeleteStudentAsync(string id)

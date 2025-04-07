@@ -30,8 +30,7 @@ namespace Web.API.Helpers
             }
 
             string userId = context.User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
-            Guid userGuid = Guid.Empty;
-            Guid.TryParse(userId, out userGuid);
+            Guid userGuid = Guid.Parse(userId);
             return userGuid;
         }
 

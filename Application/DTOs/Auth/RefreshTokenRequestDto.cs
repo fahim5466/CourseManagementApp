@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Application.DTOs.Auth
+﻿namespace Application.DTOs.Auth
 {
     public class RefreshTokenRequestDto
     {

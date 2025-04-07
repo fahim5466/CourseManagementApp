@@ -4,7 +4,7 @@ namespace Domain.Repositories
 {
     public interface IUserRepository
     {
-        Task<User?> GetUserByEmailWithRolesAsync(string email);
+        public Task<User?> GetUserByEmailWithRolesAsync(string email);
 
         public Task<User?> GetUserByEmailAsync(string email);
 

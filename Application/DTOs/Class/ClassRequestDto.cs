@@ -3,7 +3,7 @@ using static Domain.Entities.Class;
 
 namespace Application.DTOs.Class
 {
-    public class ClassRequestDto : IRequestDto
+    public class ClassRequestDto : IPreprocessDto
     {
         public const string NAME_REQ_ERR_MSG = "Name is required";
         public const string NAME_MINLEN_ERR_MSG = $"Name cannot be less than {NAME_MIN_LENGTH_STR} characters";

@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs
 {
-    public interface IRequestDto
+    public interface IPreprocessDto
     {
         public void Preprocess();
     }

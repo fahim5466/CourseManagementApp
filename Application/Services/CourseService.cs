@@ -2,6 +2,7 @@
 using Application.DTOs.Class;
 using Application.DTOs.Course;
 using Application.DTOs.User;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Relationships;
 using Domain.Repositories;
@@ -16,9 +17,9 @@ namespace Application.Services
 {
     public interface ICourseService
     {
+        public Task<Result<CourseResponseDtoWithClasses>> CreateCourseAsync(CourseRequestDto request);
         public Task<Result<CourseResponseDtoWithClasses>> GetCourseByIdAsync(string id);
         public Task<Result<List<CourseResponseDtoWithClasses>>> GetAllCoursesAsync();
-        public Task<Result<CourseResponseDtoWithClasses>> CreateCourseAsync(CourseRequestDto request);
         public Task<Result<CourseResponseDtoWithClasses>> UpdateCourseAsync(string id, CourseRequestDto request);
         public Task<Result> DeleteCourseAsync(string id);
         public Task<Result> EnrollStudentInCourseAsync(CourseEnrollmentRequestDto request);
@@ -29,27 +30,6 @@ namespace Application.Services
 
     public class CourseService(ICourseRepository courseRepository, IClassRepository classRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : ICourseService
     {
-
-        public async Task<Result<CourseResponseDtoWithClasses>> GetCourseByIdAsync(string id)
-        {
-            Course? course = await courseRepository.GetCourseByIdWithClassesAsync(id);
-
-            // Course does not exist.
-            if(course is null)
-            {
-                return Result<CourseResponseDtoWithClasses>.Failure(new CourseDoesNotExistError());
-            }
-
-            return Result<CourseResponseDtoWithClasses>.Success(StatusCodes.Status200OK, course.ToCourseResponseDtoWithClasses());
-        }
-
-        public async Task<Result<List<CourseResponseDtoWithClasses>>> GetAllCoursesAsync()
-        {
-            List<Course> courses = await courseRepository.GetAllCoursesAsync();
-
-            return Result<List<CourseResponseDtoWithClasses>>.Success(StatusCodes.Status200OK,
-                    courses.Select(course => course.ToCourseResponseDtoWithClasses()).ToList());
-        }
 
         public async Task<Result<CourseResponseDtoWithClasses>> CreateCourseAsync(CourseRequestDto request)
         {
@@ -76,9 +56,31 @@ namespace Application.Services
 
             List<Class> classes = await classRepository.GetClassesByIdAsync(request.ClassIds);
             Course course = new() { Id = Guid.NewGuid(), Name = request.Name, Classes = classes };
+
             await courseRepository.CreateCourseAsync(course);
 
             return Result<CourseResponseDtoWithClasses>.Success(StatusCodes.Status201Created, course.ToCourseResponseDtoWithClasses());
+        }
+
+        public async Task<Result<CourseResponseDtoWithClasses>> GetCourseByIdAsync(string id)
+        {
+            Course? course = await courseRepository.GetCourseByIdWithClassesAsync(id);
+
+            // Course does not exist.
+            if(course is null)
+            {
+                return Result<CourseResponseDtoWithClasses>.Failure(new CourseDoesNotExistError());
+            }
+
+            return Result<CourseResponseDtoWithClasses>.Success(StatusCodes.Status200OK, course.ToCourseResponseDtoWithClasses());
+        }
+
+        public async Task<Result<List<CourseResponseDtoWithClasses>>> GetAllCoursesAsync()
+        {
+            List<Course> courses = await courseRepository.GetAllCoursesAsync();
+
+            return Result<List<CourseResponseDtoWithClasses>>.Success(StatusCodes.Status200OK,
+                            courses.Select(course => course.ToCourseResponseDtoWithClasses()).ToList());
         }
 
         public async Task<Result<CourseResponseDtoWithClasses>> UpdateCourseAsync(string id, CourseRequestDto request)
@@ -97,11 +99,14 @@ namespace Application.Services
                 return Result<CourseResponseDtoWithClasses>.Failure(new CourseDoesNotExistError());
             }
 
-            // New name should be unique.
-            Course? existingCourse = await courseRepository.GetCourseByNameAsync(request.Name, id);
-            if (existingCourse is not null)
+            if(request.Name != course.Name)
             {
-                return Result<CourseResponseDtoWithClasses>.Failure(new CourseAlreadyExistsError());
+                // New name should be unique.
+                Course? existingCourse = await courseRepository.GetCourseByNameAsync(request.Name);
+                if (existingCourse is not null)
+                {
+                    return Result<CourseResponseDtoWithClasses>.Failure(new CourseAlreadyExistsError());
+                }
             }
 
             // Class ids should be valid.
@@ -114,6 +119,7 @@ namespace Application.Services
             List<Class> classes = await classRepository.GetClassesByIdAsync(request.ClassIds);
             course.Name = request.Name;
             course.Classes = classes;
+
             await unitOfWork.SaveChangesAsync();
 
             return Result<CourseResponseDtoWithClasses>.Success(StatusCodes.Status200OK, course.ToCourseResponseDtoWithClasses());
@@ -150,11 +156,8 @@ namespace Application.Services
                 return Result.Failure(new StudentDoesNotExistError());
             }
 
-            Guid courseGuid = Guid.Empty;
-            Guid.TryParse(request.CourseId, out courseGuid);
-
-            Guid studentGuid = Guid.Empty;
-            Guid.TryParse(request.StudentId, out studentGuid);
+            Guid courseGuid = Guid.Parse(request.CourseId);
+            Guid studentGuid = Guid.Parse(request.StudentId);
 
             // Student should not be enrolled already.
             CourseEnrollment? courseEnrollment = await courseRepository.GetCourseEnrollmentAsync(courseGuid, studentGuid);

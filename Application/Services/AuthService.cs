@@ -20,7 +20,7 @@ namespace Application.Services
     }
 
     public class AuthService(IConfiguration configuration, ICryptoHasher cryptoHasher, ISecurityTokenProvider securityTokenProvider,
-                       IUserRepository userRepository, IUnitOfWork unitOfWork, IEmailService emailService, IHttpHelper httpHelper) : IAuthService
+                             IUserRepository userRepository, IUnitOfWork unitOfWork, IEmailService emailService) : IAuthService
     {
         public const string VERIFY_EMAIL_ROUTE = "verify/email";
 
@@ -33,10 +33,10 @@ namespace Application.Services
                 return Result<LoginResponseDto>.Failure(new BadLoginRequest(validationOutcome.Errors));
             }
 
-            // Find user by email.
+            // User should exist.
             User? user = await userRepository.GetUserByEmailWithRolesAsync(request.Email);
 
-            if (user == null)
+            if (user is null)
             {
                 return Result<LoginResponseDto>.Failure(new InvalidLoginCredentialsError());
             }
@@ -80,9 +80,11 @@ namespace Application.Services
 
                 user.EmailVerificationToken = emailVerificationToken;
                 user.EmailVerificationTokenExpires = DateTime.UtcNow.AddMinutes(emailVerificationTokenExpiration);
+
                 await unitOfWork.SaveChangesAsync();
 
-                await emailService.SendEmailVerificationLinkAsync(user.Email, httpHelper.GetHostPathPrefix(), emailVerificationToken);
+                await emailService.SendEmailVerificationLinkAsync(user.Email, emailVerificationToken);
+
                 return Result.Failure(new ExpiredEmailVerificationToken());
             }
 
@@ -90,6 +92,7 @@ namespace Application.Services
             user.IsEmailVerified = true;
             user.EmailVerificationToken = null;
             user.EmailVerificationTokenExpires = null;
+
             await unitOfWork.SaveChangesAsync();
 
             return Result.Success(StatusCodes.Status200OK);
@@ -109,7 +112,7 @@ namespace Application.Services
             string email = securityTokenProvider.GetEmailFromClaims(claimsPrincipal);
             User? user = await userRepository.GetUserByEmailWithRolesAsync(email);
 
-            if(user == null || user.RefreshTokenHash == null || user.RefreshTokenExpires == null)
+            if(user is null || user.RefreshTokenHash is null || user.RefreshTokenExpires is null)
             {
                 return Result<RefreshTokenResponseDto>.Failure(new InvalidLoginCredentialsError());
             }
@@ -129,9 +132,9 @@ namespace Application.Services
 
         public async Task<Result> LogoutAsync(string email)
         {
+            // User should exist.
             User? user = await userRepository.GetUserByEmailAsync(email);
-
-            if(user == null)
+            if(user is null)
             {
                 return Result.Failure(new InvalidLoginCredentialsError());
             }
@@ -147,6 +150,7 @@ namespace Application.Services
             string refreshToken = securityTokenProvider.CreateRefreshToken();
             user.RefreshTokenHash = cryptoHasher.SimpleHash(refreshToken);
             user.RefreshTokenExpires = DateTime.UtcNow.AddMinutes(Int32.Parse(configuration["RefTok:ExpirationInMinutes"]!));
+
             await unitOfWork.SaveChangesAsync();
 
             return refreshToken;

@@ -2,6 +2,6 @@
 {
     public class CourseResponseDtoWithClasses : CourseResponseDto
     {
-        public List<string> ClassNames { get; set; } = [];
+        public required List<string> ClassNames { get; set; }
     }
 }

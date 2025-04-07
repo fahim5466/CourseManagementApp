@@ -9,58 +9,50 @@ namespace Application.Helpers
 
         public class Result
         {
-            public bool IsSuccessful { get; set; }
-            public int StatusCode { get; set; }
-            public ProblemDetails? ProblemDetails { get; set; }
+            public bool IsSuccessful { get; }
+            public int StatusCode { get; }
+            public ProblemDetails? ProblemDetails { get; }
 
-            protected Result() { }
+            protected Result(bool isSuccessful, int statusCode, ProblemDetails? problemDetails)
+            {
+                IsSuccessful = isSuccessful;
+                StatusCode = statusCode;
+                ProblemDetails = problemDetails;
+            }
 
             public static Result Success(int statusCode)
             {
-                return new Result
-                {
-                    IsSuccessful = true,
-                    StatusCode = statusCode
-                };
+                return new Result(true, statusCode, null);
             }
 
             public static Result Failure(ProblemDetails problemDetails)
             {
                 problemDetails.Type = $"{APP_ERROR_PATH}/{problemDetails.Type}";
-                return new Result
-                {
-                    IsSuccessful = false,
-                    StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError,
-                    ProblemDetails = problemDetails
-                };
+                int statusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+                return new Result(false, statusCode, problemDetails);
             }
         }
 
         public class Result<T> : Result
         {
-            public T? Value { get; set; }
+            public T? Value { get; }
 
-            private Result() {}
+            private Result(bool isSuccessful, int statusCode, ProblemDetails? problemDetails, T? value) :
+                    base(isSuccessful, statusCode, problemDetails)
+            {
+                Value = value;
+            }
 
             public static Result<T> Success(int statusCode, T? value)
             {
-                return new Result<T>
-                {
-                    IsSuccessful = true,
-                    StatusCode = statusCode,
-                    Value = value
-                };
+                return new Result<T>(true, statusCode, null, value);
             }
 
             public static new Result<T> Failure(ProblemDetails problemDetails)
             {
                 problemDetails.Type = $"{APP_ERROR_PATH}/{problemDetails.Type}";
-                return new Result<T>
-                {
-                    IsSuccessful = false,
-                    StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError,
-                    ProblemDetails = problemDetails
-                };
+                int statusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+                return new Result<T>(false, statusCode, problemDetails, default);
             }
         }
     }

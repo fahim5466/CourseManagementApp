@@ -5,14 +5,14 @@ namespace Application.Interfaces
 {
     public interface ISecurityTokenProvider
     {
-        string CreateJwtToken(User user);
+        public string CreateJwtToken(User user);
 
-        ClaimsPrincipal? ValidateJwtToken(string token, bool validateLifetime = true);
+        public ClaimsPrincipal? ValidateJwtToken(string token, bool validateLifetime = true);
 
-        string GetEmailFromClaims(ClaimsPrincipal claimsPrincipal);
+        public string GetEmailFromClaims(ClaimsPrincipal claimsPrincipal);
 
-        string CreateRefreshToken();
+        public string CreateRefreshToken();
 
-        string CreateEmailVerificationToken();
+        public string CreateEmailVerificationToken();
     }
 }

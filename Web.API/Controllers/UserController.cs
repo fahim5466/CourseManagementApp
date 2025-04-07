@@ -9,7 +9,7 @@ using static Application.Helpers.ResultHelper;
 namespace Web.API.Controllers
 {
     [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
-    public class UserController(IUserService userService) : BaseController
+    public class UserController(IUserService userService, ILogger<UserController> logger) : BaseController
     {
         [HttpPost]
         [Route("student")]
@@ -17,14 +17,7 @@ namespace Web.API.Controllers
         {
             Result<UserResponseDto> result = await userService.RegisterStudentAsync(request);
 
-            return ApiResult(result);
-        }
-
-        [HttpPut]
-        [Route("student/{id}")]
-        public async Task<IActionResult> UpdateStudentAsync(string id, UserRequestDto request)
-        {
-            Result<UserResponseDto> result = await userService.UpdateStudentAsync(id, request);
+            LogResult(result, logger);
 
             return ApiResult(result);
         }
@@ -35,6 +28,8 @@ namespace Web.API.Controllers
         {
             Result<UserResponseDto> result = await userService.GetStudentByIdAsync(id);
 
+            LogResult(result, logger);
+
             return ApiResult(result);
         }
 
@@ -44,6 +39,19 @@ namespace Web.API.Controllers
         {
             Result<List<UserResponseDto>> result = await userService.GetAllStudentsAsync();
 
+            LogResult(result, logger);
+
+            return ApiResult(result);
+        }
+
+        [HttpPut]
+        [Route("student/{id}")]
+        public async Task<IActionResult> UpdateStudentAsync(string id, UserRequestDto request)
+        {
+            Result<UserResponseDto> result = await userService.UpdateStudentAsync(id, request);
+
+            LogResult(result, logger);
+
             return ApiResult(result);
         }
 
@@ -52,6 +60,8 @@ namespace Web.API.Controllers
         public async Task<IActionResult> DeleteStudentAsync(string id)
         {
             Result result = await userService.DeleteStudentAsync(id);
+
+            LogResult(result, logger);
 
             return ApiResult(result);
         }

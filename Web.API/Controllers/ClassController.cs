@@ -11,14 +11,28 @@ using static Application.Helpers.ResultHelper;
 
 namespace Web.API.Controllers
 {
-    public class ClassController(IClassService classService, IHttpHelper httpHelper) : BaseController
+    public class ClassController(IClassService classService, IHttpHelper httpHelper, ILogger<ClassController> logger) : BaseController
     {
+        [HttpPost]
+        [Route("class")]
+        [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
+        public async Task<IActionResult> CreateClassAsync(ClassRequestDto request)
+        {
+            Result<ClassResponseDto> result = await classService.CreateClassAsync(request);
+
+            LogResult(result, logger);
+
+            return ApiResult(result);
+        }
+
         [HttpGet]
         [Route("class/{id}")]
         [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
         public async Task<IActionResult> GetClassByIdAsync(string id)
         {
             Result<ClassResponseDto> result = await classService.GetClassByIdAsync(id);
+
+            LogResult(result, logger);
 
             return ApiResult(result);
         }
@@ -30,15 +44,7 @@ namespace Web.API.Controllers
         {
             Result<List<ClassResponseDto>> result = await classService.GetAllClassesAsync();
 
-            return ApiResult(result);
-        }
-
-        [HttpPost]
-        [Route("class")]
-        [Authorize(Roles = $"{Role.ADMIN}, {Role.STAFF}")]
-        public async Task<IActionResult> CreateClassAsync(ClassRequestDto request)
-        {
-            Result<ClassResponseDto> result = await classService.CreateClassAsync(request);
+            LogResult(result, logger);
 
             return ApiResult(result);
         }
@@ -50,6 +56,8 @@ namespace Web.API.Controllers
         {
             Result<ClassResponseDto> result = await classService.UpdateClassAsync(id, request);
 
+            LogResult(result, logger);
+
             return ApiResult(result);
         }
 
@@ -59,6 +67,8 @@ namespace Web.API.Controllers
         public async Task<IActionResult> DeleteClassAsync(string id)
         {
             Result result = await classService.DeleteClassAsync(id);
+
+            LogResult(result, logger);
 
             return ApiResult(result);
         }
@@ -70,6 +80,8 @@ namespace Web.API.Controllers
         {
             Result result = await classService.EnrollStudentInClassAsync(request);
 
+            LogResult(result, logger);
+
             return ApiResult(result);
         }
 
@@ -80,6 +92,8 @@ namespace Web.API.Controllers
         {
             Result<List<CourseResponseDto>> result = await classService.GetCoursesOfClassAsync(id);
 
+            LogResult(result, logger);
+
             return ApiResult(result);
         }
 
@@ -89,6 +103,8 @@ namespace Web.API.Controllers
         public async Task<IActionResult> GetStudentsOfClassAsync(string id)
         {
             Result<List<UserResponseDto>> result = await classService.GetStudentsOfClassAsync(id);
+
+            LogResult(result, logger);
 
             return ApiResult(result);
         }
@@ -102,6 +118,8 @@ namespace Web.API.Controllers
 
             Result<List<string>> result = await classService.GetOtherStudentNamesOfClassAsync(currentUserId, classId);
 
+            LogResult(result, logger);
+
             return ApiResult(result);
         }
 
@@ -114,6 +132,8 @@ namespace Web.API.Controllers
 
             Result<List<ClassResponseDto>> result = await classService.GetClassesOfStudentAsync(currentUserId);
 
+            LogResult(result, logger);
+
             return ApiResult(result);
         }
 
@@ -123,6 +143,8 @@ namespace Web.API.Controllers
         public async Task<IActionResult> GetClassEnrollmentInfoForStudentAsync(string classId, string studentId)
         {
             Result<EnrollmentInfoResponseDto> result = await classService.GetClassEnrollmentInfoForStudentAsync(classId, studentId);
+
+            LogResult(result, logger);
 
             return ApiResult(result);
         }

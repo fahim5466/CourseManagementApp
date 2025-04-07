@@ -7,7 +7,7 @@ namespace Web.API.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            foreach (IRequestDto requestDto in context.ActionArguments.Values.Where(v => v is IRequestDto).Cast<IRequestDto>())
+            foreach (IPreprocessDto requestDto in context.ActionArguments.Values.Where(v => v is IPreprocessDto).Cast<IPreprocessDto>())
             {
                 requestDto.Preprocess();
             }

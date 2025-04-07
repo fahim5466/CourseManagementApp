@@ -1,5 +1,4 @@
-﻿using Application;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Relationships;
@@ -47,7 +46,7 @@ namespace Infrastructure.Database
                 Id = new Guid("B8C35758-1881-47AD-8994-0529DF7C70ED"),
                 Name = "Admin",
                 Email = "admin@test.com",
-                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
+                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O", // Password is 'abc12345!'.
                 IsEmailVerified = true,
                 EmailVerificationToken = null,
                 EmailVerificationTokenExpires = null,
@@ -66,7 +65,7 @@ namespace Infrastructure.Database
                 Id = new Guid("EE13B6C6-A98E-440B-93F8-ECF083D51052"),
                 Name = "Staff",
                 Email = "staff@test.com",
-                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
+                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O", // Password is 'abc12345!'.
                 IsEmailVerified = true,
                 EmailVerificationToken = null,
                 EmailVerificationTokenExpires = null,
@@ -85,7 +84,7 @@ namespace Infrastructure.Database
                 Id = new Guid("2E23583F-D118-4295-8A80-09266B7497DB"),
                 Name = "Student",
                 Email = "student@test.com",
-                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O",
+                PasswordHash = "$2a$13$IiHfZUPeaA5zu22M57YZB.riJVHfuTwMpw4z9sVvpvdqstDRtt21O", // Password is 'abc12345!'.
                 IsEmailVerified = true,
                 EmailVerificationToken = null,
                 EmailVerificationTokenExpires = null,

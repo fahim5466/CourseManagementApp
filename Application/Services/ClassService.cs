@@ -3,6 +3,7 @@ using Application.DTOs.Class;
 using Application.DTOs.Course;
 using Application.DTOs.Enrollment;
 using Application.DTOs.User;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Relationships;
 using Domain.Repositories;
@@ -16,9 +17,9 @@ namespace Application.Services
 {
     public interface IClassService
     {
+        public Task<Result<ClassResponseDto>> CreateClassAsync(ClassRequestDto request);
         public Task<Result<ClassResponseDto>> GetClassByIdAsync(string id);
         public Task<Result<List<ClassResponseDto>>> GetAllClassesAsync();
-        public Task<Result<ClassResponseDto>> CreateClassAsync(ClassRequestDto request);
         public Task<Result<ClassResponseDto>> UpdateClassAsync(string id, ClassRequestDto request);
         public Task<Result> DeleteClassAsync(string id);
         public Task<Result> EnrollStudentInClassAsync(ClassEnrollmentRequestDto request);
@@ -31,6 +32,29 @@ namespace Application.Services
 
     public class ClassService(IClassRepository classRepository, ICourseRepository courseRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : IClassService
     {
+        public async Task<Result<ClassResponseDto>> CreateClassAsync(ClassRequestDto request)
+        {
+            // Validate request.
+            ValidationOutcome validationOutcome = Validate(request);
+            if (!validationOutcome.IsValid)
+            {
+                return Result<ClassResponseDto>.Failure(new BadClassCreateOrUpdateRequest(validationOutcome.Errors));
+            }
+
+            // Class name should be unique.
+            Class? existingClass = await classRepository.GetClassByNameAsync(request.Name);
+            if (existingClass is not null)
+            {
+                return Result<ClassResponseDto>.Failure(new ClassAlreadyExistsError());
+            }
+
+            Class newClass = new() { Id = Guid.NewGuid(), Name = request.Name };
+
+            await classRepository.CreateClassAsync(newClass);
+
+            return Result<ClassResponseDto>.Success(StatusCodes.Status201Created, newClass.ToClassResponseDto());
+        }
+
         public async Task<Result<ClassResponseDto>> GetClassByIdAsync(string id)
         {
             Class? clss = await classRepository.GetClassByIdAsync(id);
@@ -48,30 +72,7 @@ namespace Application.Services
         {
             List<Class> classes = await classRepository.GetAllClassesAsync();
 
-            return Result<List<ClassResponseDto>>.Success(StatusCodes.Status200OK,
-                        classes.Select(c => c.ToClassResponseDto()).ToList());
-        }
-
-        public async Task<Result<ClassResponseDto>> CreateClassAsync(ClassRequestDto request)
-        {
-            // Validate request.
-            ValidationOutcome validationOutcome = Validate(request);
-            if(!validationOutcome.IsValid)
-            {
-                return Result<ClassResponseDto>.Failure(new BadClassCreateOrUpdateRequest(validationOutcome.Errors));
-            }
-
-            // Class name should be unique.
-            Class? existingClass = await classRepository.GetClassByNameAsync(request.Name);
-            if(existingClass is not null)
-            {
-                return Result<ClassResponseDto>.Failure(new ClassAlreadyExistsError());
-            }
-
-            Class newClass = new() { Id = Guid.NewGuid(), Name = request.Name };
-            await classRepository.CreateClassAsync(newClass);
-
-            return Result<ClassResponseDto>.Success(StatusCodes.Status201Created, newClass.ToClassResponseDto());
+            return Result<List<ClassResponseDto>>.Success(StatusCodes.Status200OK, classes.Select(c => c.ToClassResponseDto()).ToList());
         }
 
         public async Task<Result<ClassResponseDto>> UpdateClassAsync(string id, ClassRequestDto request)
@@ -90,14 +91,18 @@ namespace Application.Services
                 return Result<ClassResponseDto>.Failure(new ClassDoesNotExistError());
             }
 
-            // New name should be unique.
-            Class? existingClassWithSameName = await classRepository.GetClassByNameAsync(request.Name, id);
-            if (existingClassWithSameName is not null)
+            if(request.Name != clss.Name)
             {
-                return Result<ClassResponseDto>.Failure(new ClassAlreadyExistsError());
+                // New name should be unique.
+                Class? existingClass = await classRepository.GetClassByNameAsync(request.Name);
+                if (existingClass is not null)
+                {
+                    return Result<ClassResponseDto>.Failure(new ClassAlreadyExistsError());
+                }
             }
 
             clss.Name = request.Name;
+
             await unitOfWork.SaveChangesAsync();
 
             return Result<ClassResponseDto>.Success(StatusCodes.Status200OK, clss.ToClassResponseDto());
@@ -105,7 +110,7 @@ namespace Application.Services
 
         public async Task<Result> DeleteClassAsync(string id)
         {
-            // Class not found.
+            // Class should exist.
             Class? clss = await classRepository.GetClassByIdAsync(id);
             if (clss is null)
             {
@@ -133,11 +138,8 @@ namespace Application.Services
                 return Result.Failure(new StudentDoesNotExistError());
             }
 
-            Guid classGuid = Guid.Empty;
-            Guid.TryParse(request.ClassId, out classGuid);
-
-            Guid studentGuid = Guid.Empty;
-            Guid.TryParse(request.StudentId, out studentGuid);
+            Guid classGuid = Guid.Parse(request.ClassId);
+            Guid studentGuid = Guid.Parse(request.StudentId);
 
             // Student should not be enrolled already.
             ClassEnrollment? classEnrollment = await classRepository.GetClassEnrollmentAsync(classGuid, studentGuid);
@@ -194,7 +196,6 @@ namespace Application.Services
 
             // Class should exist.
             Class? clss = await classRepository.GetClassByIdAsync(classId);
-            
             if (clss is null)
             {
                 return Result<List<string>>.Failure(new ClassDoesNotExistError());
@@ -202,7 +203,7 @@ namespace Application.Services
 
             List<User> students = await classRepository.GetStudentsOfClassAsync(classId);
                 
-            // Student should be enrolled in the class.
+            // Student should be enrolled in the class either directly or indirectly through a course.
             if(!students.Any(s => s.Id.ToString() == studentId))
             {
                 return Result<List<string>>.Failure(new StudentNotEnrolledInClassError());
