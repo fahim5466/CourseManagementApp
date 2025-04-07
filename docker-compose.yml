@@ -13,6 +13,7 @@ services:
       context: .
       dockerfile: Web.API/Dockerfile
     volumes:
+      - ./https_cert:/app/https_cert
       - ./app_logs:/app/logs
     environment:
       - ConnectionStrings__DefaultConnection=Host=coursemanage.database;Port=5432;Database=coursemanage;Username=postgres;Password=postgres;
