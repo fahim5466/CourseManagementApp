@@ -1,0 +1,913 @@
+{
+	"info": {
+		"_postman_id": "ba3bd685-9c96-4438-bf51-a6866cfa330c",
+		"name": "Course Management App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43343274",
+		"_collection_link": "https://galactic-satellite-419469.postman.co/workspace/Team-Workspace~9d40cb95-b9e7-42c8-8860-364d3215bad7/collection/43343274-ba3bd685-9c96-4438-bf51-a6866cfa330c?action=share&source=collection_link&creator=43343274"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Email\": \"staff@test.com\",\r\n    \"Password\": \"abc12345!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "Login as a user.\n\nAccessible by everyone"
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/refresh-token",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"refresh-token"
+					]
+				},
+				"description": "Refreshes access token. Fails if refresh token is expired.\n\nAccessible by everyone"
+			},
+			"response": []
+		},
+		{
+			"name": "Verify email",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/verify/email?verificationToken=3A2327E7392E94D92AA7B591B0B089E91623E94F9EE088C47B45ECA2FD00B421",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"verify",
+						"email"
+					],
+					"query": [
+						{
+							"key": "verificationToken",
+							"value": "3A2327E7392E94D92AA7B591B0B089E91623E94F9EE088C47B45ECA2FD00B421"
+						}
+					]
+				},
+				"description": "Verifies email if verification token is valid and not expired.\n\nAccessible by everyone."
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/logout",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"logout"
+					]
+				},
+				"description": "Logs out user.\n\nAccessible only by a logged in user."
+			},
+			"response": []
+		},
+		{
+			"name": "Create student",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"student2\",\r\n    \"Email\": \"student2@test.com\",\r\n    \"Password\": \"abc123!!!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/student",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"student"
+					]
+				},
+				"description": "Creates a student.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get student",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:8080/api/student/9d978428-ae44-4735-838c-6eaac8abd904",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"student",
+						"9d978428-ae44-4735-838c-6eaac8abd904"
+					]
+				},
+				"description": "Gets a student by id.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get students",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:8080/api/students",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"students"
+					]
+				},
+				"description": "Gets all students.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Update student",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"student2_changed\",\r\n    \"Email\": \"student2_changed@test.com\",\r\n    \"Password\": \"abc123!!!!!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/student/9d978428-ae44-4735-838c-6eaac8abd904",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"student",
+						"9d978428-ae44-4735-838c-6eaac8abd904"
+					]
+				},
+				"description": "Updates a student.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete student",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:8080/api/student/9d978428-ae44-4735-838c-6eaac8abd904",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"student",
+						"9d978428-ae44-4735-838c-6eaac8abd904"
+					]
+				},
+				"description": "Deletes a student.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Create class",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"JavaProgramming\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/class",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"class"
+					]
+				},
+				"description": "Creates a class.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get class",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/class/17685153-ff86-4faf-bd54-9d4536935795",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"class",
+						"17685153-ff86-4faf-bd54-9d4536935795"
+					]
+				},
+				"description": "Gets a class by id.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get classes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/classes",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"classes"
+					]
+				},
+				"description": "Gets all classes.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Update class",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"JavaProgrammingChanged\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/class/17685153-ff86-4faf-bd54-9d4536935795",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"class",
+						"17685153-ff86-4faf-bd54-9d4536935795"
+					]
+				},
+				"description": "Updates a class.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete class",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/class/17685153-ff86-4faf-bd54-9d4536935795",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"class",
+						"17685153-ff86-4faf-bd54-9d4536935795"
+					]
+				},
+				"description": "Deletes a class\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Create course",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"ComputerScience\",\r\n    \"ClassIds\": [\r\n        \"823a6802-98ba-49a9-b42a-91040a07acfb\",\r\n        \"822eb75d-6713-44c8-a222-24c2c377ea22\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/course",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"course"
+					]
+				},
+				"description": "Creates a course.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get course",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/course/fb6acc4d-b296-490a-91c7-ced56f95ca65",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"course",
+						"fb6acc4d-b296-490a-91c7-ced56f95ca65"
+					]
+				},
+				"description": "Gets a course by id.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get courses",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/courses",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"courses"
+					]
+				},
+				"description": "Gets all courses.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Update course",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Name\": \"ComputerScienceChanged\",\r\n    \"ClassIds\": [\r\n        \"823a6802-98ba-49a9-b42a-91040a07acfb\",\r\n        \"b856a636-4ed0-4eab-964e-ab86a6d1944d\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/course/fb6acc4d-b296-490a-91c7-ced56f95ca65",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"course",
+						"fb6acc4d-b296-490a-91c7-ced56f95ca65"
+					]
+				},
+				"description": "Updates a course.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete course",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/course/fb6acc4d-b296-490a-91c7-ced56f95ca65",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"course",
+						"fb6acc4d-b296-490a-91c7-ced56f95ca65"
+					]
+				},
+				"description": "Deletes a course.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Enroll student in class",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"ClassId\": \"823a6802-98ba-49a9-b42a-91040a07acfb\",\r\n    \"StudentId\": \"84197b0a-667e-486d-89d2-b955a1f5da8c\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/class/enroll",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"class",
+						"enroll"
+					]
+				},
+				"description": "Directly enrolls a student in a class.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Enroll student in course",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"CourseId\": \"d2045ced-44a7-43b8-b163-a36aa10796ec\",\r\n    \"StudentId\": \"84197b0a-667e-486d-89d2-b955a1f5da8c\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/course/enroll",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"course",
+						"enroll"
+					]
+				},
+				"description": "Enrolls a student in a course. Also indirectly enrolls the student in all classes of that course.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get students of course",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/course/d5bba856-6190-4579-b219-f0e5599fb698/students",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"course",
+						"d5bba856-6190-4579-b219-f0e5599fb698",
+						"students"
+					]
+				},
+				"description": "Gets all students enrolled in a course.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get students of class",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/class/823a6802-98ba-49a9-b42a-91040a07acfb/students",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"class",
+						"823a6802-98ba-49a9-b42a-91040a07acfb",
+						"students"
+					]
+				},
+				"description": "Gets all students enrolled in a class. This includes students directly enrolled in that class and also students indirectly enrolled in that class through a course.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get classes of course",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/course/d5bba856-6190-4579-b219-f0e5599fb698/classes",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"course",
+						"d5bba856-6190-4579-b219-f0e5599fb698",
+						"classes"
+					]
+				},
+				"description": "Gets the classes of a course.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get courses of class",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:8080/api/class/822eb75d-6713-44c8-a222-24c2c377ea22/courses",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"class",
+						"822eb75d-6713-44c8-a222-24c2c377ea22",
+						"courses"
+					]
+				},
+				"description": "Gets the courses that includes the class.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get class enrollment info for student",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/enrollment-info?classId=823a6802-98ba-49a9-b42a-91040a07acfb&studentId=84197b0a-667e-486d-89d2-b955a1f5da8c",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"enrollment-info"
+					],
+					"query": [
+						{
+							"key": "classId",
+							"value": "823a6802-98ba-49a9-b42a-91040a07acfb"
+						},
+						{
+							"key": "studentId",
+							"value": "84197b0a-667e-486d-89d2-b955a1f5da8c"
+						}
+					]
+				},
+				"description": "Gets the class enrollment info for a student. Includes info for both direct enrollment and indirect enrollments through courses.\n\nAccessible only by admin and staff users."
+			},
+			"response": []
+		},
+		{
+			"name": "Get courses of student",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/my-courses",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"my-courses"
+					]
+				},
+				"description": "Gets the courses of a logged in student.\n\nAccessible only by a student user."
+			},
+			"response": []
+		},
+		{
+			"name": "Get classes of student",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:8080/api/my-classes",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"my-classes"
+					]
+				},
+				"description": "Gets the classes of a logged in student. Includes both classes that the student is directly enrolled in and classes that the student is indirectly enrolled in through a course.\n\nAccessible only by a student user."
+			},
+			"response": []
+		},
+		{
+			"name": "Get other student names in class",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:8080/api/class/823a6802-98ba-49a9-b42a-91040a07acfb/other-students",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"class",
+						"823a6802-98ba-49a9-b42a-91040a07acfb",
+						"other-students"
+					]
+				},
+				"description": "Gets the names of the other students of a class for a logged in student. The student must be enrolled in that class either directly or indirectly through a course.\n\nAccessible only by a student user."
+			},
+			"response": []
+		}
+	]
+}
