@@ -3,11 +3,10 @@ using Application.Services;
 using AutoFixture;
 using Domain.Entities;
 using Domain.Relationships;
+using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Microsoft.AspNetCore.Http;
-using Moq;
-using Moq.EntityFrameworkCore;
 using Tests.Helpers;
 using static Application.DTOs.DTOHelper;
 using static Application.Errors.UserErrors;
@@ -32,10 +31,10 @@ namespace Tests.UserServiceTests
 
             UserRole userRole = new() { UserId = user.Id, RoleId = studentRole.Id };
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
             UserService userService = GetUserService(mockDbContext.Object);
 
             // Act.
@@ -58,10 +57,10 @@ namespace Tests.UserServiceTests
 
             UserRole userRole = new() { UserId = user.Id, RoleId = adminRole.Id };
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([adminRole]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [adminRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
             UserService userService = GetUserService(mockDbContext.Object);
 
             // Act.
@@ -84,10 +83,10 @@ namespace Tests.UserServiceTests
 
             UserRole userRole = new() { UserId = user.Id, RoleId = studentRole.Id };
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
             UserService userService = GetUserService(mockDbContext.Object);
 
             // Act.
@@ -122,10 +121,10 @@ namespace Tests.UserServiceTests
             UserRole userRole3 = new() { UserId = user3.Id, RoleId = studentRole.Id };
             UserRole userRole4 = new() { UserId = user4.Id, RoleId = studentRole.Id };
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user1, user2, user3, user4]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([adminRole, staffRole, studentRole]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole1, userRole2, userRole3, userRole4]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user1, user2, user3, user4]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [adminRole, staffRole, studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole1, userRole2, userRole3, userRole4]);
             UserService userService = GetUserService(mockDbContext.Object);
 
             // Act.

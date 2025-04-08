@@ -4,7 +4,10 @@ using Domain.Repositories;
 using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Infrastructure.Security;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Moq;
+using Tests.Helpers;
 using static Tests.Helpers.MockDependencyHelper;
 
 namespace Tests.UserServiceTests

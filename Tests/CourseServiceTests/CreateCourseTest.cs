@@ -3,12 +3,11 @@ using Application.DTOs.Course;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
+using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
-using Moq;
-using Moq.EntityFrameworkCore;
 using Tests.Helpers;
 using static Application.Errors.CourseErrors;
 using static Application.Helpers.ResultHelper;
@@ -27,8 +26,8 @@ namespace Tests.CourseServiceTests
         {
             // Arrange.
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Courses, []);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseService courseService = GetCourseService(dbContext);
@@ -70,8 +69,8 @@ namespace Tests.CourseServiceTests
 
             Course course = CourseFixture().With(x => x.Name, "abc").Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([course]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseService courseService = GetCourseService(dbContext);
@@ -94,9 +93,9 @@ namespace Tests.CourseServiceTests
 
             Class clss = ClassFixture().With(c => c.Id, Guid.NewGuid()).Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Classes).ReturnsDbSet([clss]);
-            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, []);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseService courseService = GetCourseService(dbContext);
@@ -119,10 +118,10 @@ namespace Tests.CourseServiceTests
 
             Class clss = ClassFixture().With(c => c.Id, Guid.NewGuid()).Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Classes).ReturnsDbSet([clss]);
-            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([]);
-            mockDbContext.Setup(x => x.CourseClasses).ReturnsDbSet([]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, []);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             CourseRepository courseRepository = new CourseRepository(dbContext);

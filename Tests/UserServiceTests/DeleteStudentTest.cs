@@ -2,12 +2,11 @@
 using AutoFixture;
 using Domain.Entities;
 using Domain.Relationships;
+using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
-using Moq;
-using Moq.EntityFrameworkCore;
 using Tests.Helpers;
 using static Application.Errors.UserErrors;
 using static Application.Helpers.ResultHelper;
@@ -27,10 +26,10 @@ namespace Tests.UserServiceTests
             User user = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
             UserRole userRole = new() { UserId = user.Id, RoleId = studentRole.Id };
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             UserService userService = GetUserService(dbContext);
@@ -53,10 +52,10 @@ namespace Tests.UserServiceTests
             User user = UserFixture().With(x => x.Id, Guid.NewGuid()).Create();
             UserRole userRole = new() { UserId = user.Id, RoleId = studentRole.Id };
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             UserRepository userRepository = new(dbContext);

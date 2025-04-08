@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using EntityFrameworkCoreMock;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,11 +25,11 @@ namespace Tests.Helpers
             return mockConfiguration.Object;
         }
 
-        public static Mock<ApplicationDbContext> GetMockDbContext()
+        public static DbContextMock<ApplicationDbContext> GetMockDbContext()
         {
             DbContextOptions<ApplicationDbContext> dummyOptions = new DbContextOptionsBuilder<ApplicationDbContext>().Options;
 
-            Mock<ApplicationDbContext> mockDbContext = new(dummyOptions, GetMockHttpHelper());
+            DbContextMock<ApplicationDbContext> mockDbContext = new DbContextMock<ApplicationDbContext>(dummyOptions, GetMockHttpHelper());
 
             return mockDbContext;
         }

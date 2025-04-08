@@ -1,13 +1,16 @@
-﻿using Application.DTOs.Enrollment;
+﻿using Application.DTOs;
+using Application.DTOs.Class;
+using Application.DTOs.Course;
+using Application.DTOs.Enrollment;
+using Application.DTOs.User;
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
 using Domain.Relationships;
+using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Microsoft.AspNetCore.Http;
-using Moq;
-using Moq.EntityFrameworkCore;
 using Tests.Helpers;
 using static Application.Errors.ClassErrors;
 using static Application.Errors.UserErrors;
@@ -30,11 +33,11 @@ namespace Tests.ClassServiceTests
             Role studentRole = RoleFixture().With(x => x.Name, Role.STUDENT).Create();
             UserRole userRole = new() { RoleId = studentRole.Id, UserId = student.Id };
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.Classes).ReturnsDbSet([]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, []);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             ClassService classService = GetClassService(dbContext);
@@ -61,11 +64,11 @@ namespace Tests.ClassServiceTests
 
             Class clss = ClassFixture().Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.Classes).ReturnsDbSet([clss]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             ClassService classService = GetClassService(dbContext);
@@ -90,15 +93,15 @@ namespace Tests.ClassServiceTests
 
             Class clss = ClassFixture().Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.Classes).ReturnsDbSet([clss]);
-            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([]);
-            mockDbContext.Setup(x => x.CourseClasses).ReturnsDbSet([]);
-            mockDbContext.Setup(x => x.ClassEnrollments).ReturnsDbSet([]);
-            mockDbContext.Setup(x => x.CourseEnrollments).ReturnsDbSet([]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, []);
+            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, []);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             ClassService classService = GetClassService(dbContext);
@@ -135,15 +138,15 @@ namespace Tests.ClassServiceTests
                                                                       .With(x => x.StudentId, student.Id)
                                                                       .Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.Classes).ReturnsDbSet([clss]);
-            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([]);
-            mockDbContext.Setup(x => x.CourseClasses).ReturnsDbSet([]);
-            mockDbContext.Setup(x => x.ClassEnrollments).ReturnsDbSet([classEnrollment]);
-            mockDbContext.Setup(x => x.CourseEnrollments).ReturnsDbSet([]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, []);
+            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, [classEnrollment]);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, []);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             ClassService classService = GetClassService(dbContext);
@@ -194,15 +197,15 @@ namespace Tests.ClassServiceTests
                                                                           .With(x => x.StudentId, student.Id)
                                                                           .Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.Classes).ReturnsDbSet([clss]);
-            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([course1, course2]);
-            mockDbContext.Setup(x => x.CourseClasses).ReturnsDbSet([courseClass1, courseClass2]);
-            mockDbContext.Setup(x => x.ClassEnrollments).ReturnsDbSet([]);
-            mockDbContext.Setup(x => x.CourseEnrollments).ReturnsDbSet([courseEnrollment1, courseEnrollment2]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course1, course2]);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, [courseClass1, courseClass2]);
+            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, []);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, [courseEnrollment1, courseEnrollment2]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             ClassService classService = GetClassService(dbContext);
@@ -263,15 +266,15 @@ namespace Tests.ClassServiceTests
                                                                           .With(x => x.StudentId, student.Id)
                                                                           .Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([student]);
-            mockDbContext.Setup(x => x.UserRoles).ReturnsDbSet([userRole]);
-            mockDbContext.Setup(x => x.Roles).ReturnsDbSet([studentRole]);
-            mockDbContext.Setup(x => x.Classes).ReturnsDbSet([clss]);
-            mockDbContext.Setup(x => x.Courses).ReturnsDbSet([course1, course2]);
-            mockDbContext.Setup(x => x.CourseClasses).ReturnsDbSet([courseClass1, courseClass2]);
-            mockDbContext.Setup(x => x.ClassEnrollments).ReturnsDbSet([classEnrollment]);
-            mockDbContext.Setup(x => x.CourseEnrollments).ReturnsDbSet([courseEnrollment1, courseEnrollment2]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [student]);
+            mockDbContext.CreateDbSetMock(x => x.UserRoles, [userRole]);
+            mockDbContext.CreateDbSetMock(x => x.Roles, [studentRole]);
+            mockDbContext.CreateDbSetMock(x => x.Classes, [clss]);
+            mockDbContext.CreateDbSetMock(x => x.Courses, [course1, course2]);
+            mockDbContext.CreateDbSetMock(x => x.CourseClasses, [courseClass1, courseClass2]);
+            mockDbContext.CreateDbSetMock(x => x.ClassEnrollments, [classEnrollment]);
+            mockDbContext.CreateDbSetMock(x => x.CourseEnrollments, [courseEnrollment1, courseEnrollment2]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             ClassService classService = GetClassService(dbContext);

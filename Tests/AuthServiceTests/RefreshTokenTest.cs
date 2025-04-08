@@ -2,12 +2,11 @@
 using Application.Services;
 using AutoFixture;
 using Domain.Entities;
+using EntityFrameworkCoreMock;
 using FluentAssertions;
 using Infrastructure.Database;
 using Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
-using Moq;
-using Moq.EntityFrameworkCore;
 using Tests.Helpers;
 using static Application.Errors.AuthErrors;
 using static Application.Helpers.ResultHelper;
@@ -22,7 +21,7 @@ namespace Tests.AuthServiceTests
         public async Task RefreshToken_InvalidJwtToken_ReturnsError()
         {
             // Arrange.
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
             AuthService authService = GetAuthService(mockDbContext.Object);
 
             RefreshTokenRequestDto request = new() { JwtToken = "abc", RefreshToken = "abc" };
@@ -48,8 +47,8 @@ namespace Tests.AuthServiceTests
                                      .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(10))
                                      .Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
 
             AuthService authService = GetAuthService(mockDbContext.Object);
 
@@ -81,8 +80,8 @@ namespace Tests.AuthServiceTests
                                      .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(-10))
                                      .Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
 
             AuthService authService = GetAuthService(mockDbContext.Object);
 
@@ -114,8 +113,8 @@ namespace Tests.AuthServiceTests
                                      .With(u => u.RefreshTokenExpires, DateTime.UtcNow.AddMinutes(10))
                                      .Create();
 
-            Mock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
-            mockDbContext.Setup(x => x.Users).ReturnsDbSet([user]);
+            DbContextMock<ApplicationDbContext> mockDbContext = MockDependencyHelper.GetMockDbContext();
+            mockDbContext.CreateDbSetMock(x => x.Users, [user]);
             ApplicationDbContext dbContext = mockDbContext.Object;
 
             AuthService authService = GetAuthService(dbContext);
