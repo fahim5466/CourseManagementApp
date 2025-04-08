@@ -26,7 +26,7 @@ dotnet dev-certs https --trust
 docker compose up --build
 ```
 6. It will take some time to download the required images, start the containers and make everything ready. You can also open and run the solution using visual studio 2022 for ease of use.
-7. Open postman with our API collection. The database has been seeded with the following users. Log in as one of them and test out the APIs
+7. Open postman with our API collection ('Course Management App.postman_collection.json' file inside the solution folder). The database has been seeded with the following users. Log in as one of them and test out the APIs
 ```
 User with admin role
 ---
