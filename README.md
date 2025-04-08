@@ -1,4 +1,4 @@
-# CourseManagementApp
+# Course Management App
 
 A course management application for a university that will allow them to create and manage courses, classes and students. 
 
