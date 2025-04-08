@@ -70,6 +70,12 @@ namespace Web.API.Controllers
 
             Result result = await authService.LogoutAsync(email);
 
+            if(result.IsSuccessful)
+            {
+                httpHelper.SetAccessTokenCookie(string.Empty, true);
+                httpHelper.SetRefreshTokenCookie(string.Empty, true);
+            }
+
             LogResult(result, logger);
 
             return ApiResult(result);

@@ -34,20 +34,20 @@ namespace Web.API.Helpers
             return userGuid;
         }
 
-        public void SetAccessTokenCookie(string jwtToken)
+        public void SetAccessTokenCookie(string jwtToken, bool expireCookie = false)
         {
-            int jwtTokenExpiryInMinutes = Int32.Parse(configuration["Jwt:ExpirationInMinutes"]!);
+            int refreshTokenExpiryInMinutes = Int32.Parse(configuration["RefTok:ExpirationInMinutes"]!);
 
             httpContextAccessor.HttpContext?.Response.Cookies.Append(ACCESS_TOKEN_COOKIE_KEY, jwtToken, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddMinutes(jwtTokenExpiryInMinutes)
+                Expires = expireCookie ? DateTime.UtcNow.AddDays(-1) : DateTime.UtcNow.AddMinutes(refreshTokenExpiryInMinutes)
             });
         }
 
-        public void SetRefreshTokenCookie(string refreshToken)
+        public void SetRefreshTokenCookie(string refreshToken, bool expireCookie = false)
         {
             int refreshTokenExpiryInMinutes = Int32.Parse(configuration["RefTok:ExpirationInMinutes"]!);
 
@@ -56,7 +56,7 @@ namespace Web.API.Helpers
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddMinutes(refreshTokenExpiryInMinutes),
+                Expires = expireCookie ? DateTime.UtcNow.AddDays(-1) : DateTime.UtcNow.AddMinutes(refreshTokenExpiryInMinutes),
                 Path = "/api/refresh-token"
             });
         }
